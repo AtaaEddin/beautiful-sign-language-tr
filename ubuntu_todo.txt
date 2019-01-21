@@ -1,0 +1,51 @@
+TODO
+
+alpha project (wamp)
+
+-saparate between oflow and RGB preprocessing [done]
+-test 20class model [done]
+-fix printing to console and split processing time to preprocessing and predicting [done]
+-which one to choose thread or process [?]
+-reorganize the code
+-include cpulstm
+-add argparse module
+-parallelizing the two stream
+-parallelizng oflow calculation 
+-why 20 classes predictions are shit
+-change loading csv file method -clean the prediction script-
+
+
+later 
+-organize the training and test phase
+-try to export alpha project to easy use
+
+
+rephrasing :
+fixing:
+	prediction (checkpoints,utils,...):
+		no more printing to console.
+		less funtions
+		remove unnecassary parts
+		remove unUsed code
+		rebuild server scripts -make one script for wamp and restAPI-
+		solve the refrencing of modules
+
+	training(modeles,training,training(old)):
+
+updating:
+	
+
+
+
+beta project (Rest API)
+
+-docker and kubernet
+-use ubuntu or centOS
+-cpu or gpu
+-check google cloud and its prices
+-how to upload model
+-find other tutorials to how to do it
+
+
+for this day:
+10 word working on omer computer 

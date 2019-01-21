@@ -1,0 +1,250 @@
+import argparse
+import os 
+import glob
+import time 
+
+import sys
+sys.path.insert(0,'./utils')
+
+from utils.util import load_models,csv_to_dict
+
+CHEKPOINT = "./checkpoints"
+WEIGHTS = "weights"
+LABELS = "classes"
+LABELS_SWORD_COL = "sWord"
+
+
+def get_sys_info(sys_name):
+	
+	rgb_dir = None
+	oflow_dir = None
+	lstm_dir = None
+	labels = None
+
+	# find which words folder been chosen.
+	systems = glob.glob(os.path.join(CHEKPOINT,'*'))	
+	systems = list(map(lambda s: s.rsplit(f'{os.sep}',1)[-1],systems))
+
+	if not sys_name in systems or len(systems) == 0:
+		raise ValueError(f"ERROR : could not find {sys_name} in {CHEKPOINT} directory.")
+
+	sys_path = os.path.join(CHEKPOINT,sys_name)
+
+	# get weights.
+	sys_weights = glob.glob(os.path.join(sys_path,WEIGHTS,'*.h5'))
+
+	if len(sys_weights) == 0:
+		raise ValueError(f"ERROR : no weights has been found in {WEIGHTS} folder.")
+
+	# find rgb,oflow,lstm,lstm_cpu
+	h5_files = ['rgb','oflow','lstm','cpu']
+	h5_dirs = {}
+	for h5_file in h5_files:
+
+		h5_dir = [weights for weights in sys_weights if h5_file in weights.lower()]
+		if len(h5_dir) > 1:
+			raise ValueError(f"ERROR : In {h5_dir[0].rsplit(os.sep,1)[0]} directory more than one {h5_file} file found.")
+		
+		h5_dirs[h5_file] = h5_dir[0] if len(h5_dir) > 0 else None
+
+	# get labels file
+	sys_labels = glob.glob(os.path.join(sys_path,LABELS,'*.csv'))
+
+
+	if len(sys_labels) != 1:
+		raise ValueError(f"ERROR : something wrong with {LABELS} folder.")
+
+	return h5_dirs,sys_labels[0]	
+
+def print_sys_info(args):
+
+	print("running the system with:")
+	for arg in vars(args):
+		print(' '*3,f'{arg} = {getattr(args,arg)}')
+
+if __name__ == '__main__' :
+
+	parser = argparse.ArgumentParser()
+
+	# --run 
+	parser.add_argument(
+		'-run',
+		'--run',
+		dest='run_method',
+		type=str,
+		default='webcam',
+		help='choose a way to test the sign language system.')
+	parser.add_argument(
+		'-sys',
+		'--system',
+		dest='system_name',
+		type=str,
+		default='turkish_10_word',
+		help='choose which sign language system to run.')
+	# to run on wamp arguments
+	################
+	parser.add_argument(
+		'-php_webservice',
+		'--wamp_webservice',
+		dest='php_webservice',
+		type=str,
+		default='http://localhost/combine/webservices.php',
+		help='path to the php file for web service.')
+	parser.add_argument(
+		'-wamp_folder',
+		'--wamp_project',
+		dest='wamp_folder',
+		type=str,
+		default='D:/wamp64/www/combine/',
+		help='path to the wamp project.')
+	################
+	parser.add_argument(
+		'-use_lstm',
+		'--use_lstm',
+		dest='use_lstm',
+		type=bool,
+		default=False,
+		help='add lstm on top of stream network.')
+	parser.add_argument(
+		'-rgb',
+		'--rgb_only',
+		dest='use_rgb',
+		type=bool,
+		default=False,
+		help='just use rgb stream.')
+	parser.add_argument(
+		'-oflow',
+		'--oflow_only',
+		dest='use_oflow',
+		type=bool,
+		default=True,
+		help='just use optical flow stream.')
+	parser.add_argument(
+		'-on_cpu',
+		'--use_cpu',
+		dest='on_cpu',
+		type=bool,
+		default=True,
+		help='run the system on cpu.')
+	parser.add_argument(
+		'-pred_type',
+		'--prediction_type',
+		dest='pred_type',
+		type=str,
+		default='word',
+		help='define how the system output will be, either word or sentence.')
+	parser.add_argument(
+		'-nTop',
+		'--top_predictions',
+		dest='nTop',
+		type=int,
+		default=3,
+		help='how many result(output) should the system give.')
+	parser.add_argument(
+		'-download',
+		'--download',
+		dest='download',
+		type=bool,
+		default=False,
+		help='download weights and classes to checkpoints directory.')
+	# CPU OR GPU
+	# HOW MUCH FRACTION ON GPU DO YOU WANT TO USE 
+	# WHICH GPU TO RUN ON
+	# WORDS OR SENTENCES
+	# SINGLE CPU OR MULTIPULE
+	# use just rgb or just oflow
+	# don't use lstm
+	args = parser.parse_args()
+
+	#load checkpoints and labels
+	system_name = args.system_name
+	models_dir,labels_dir = get_sys_info(system_name)
+	# informative message
+	print(f"In {args.system_name} folder:")
+	for k,v in models_dir.items():
+		if v is not None:
+			# informative message
+			print(f"{' '*4}{k.upper()} WEIGHTS found : {v.rsplit(os.sep,1)[-1]}")
+	# informative message
+	print(f"{' '*4}labels : {labels_dir.rsplit(os.sep,1)[-1]}")
+
+	# run test script 
+	run_method = args.run_method
+	use_lstm = args.use_lstm
+	use_rgb = args.use_rgb	
+	use_oflow = args.use_oflow
+	on_cpu = args.on_cpu	
+	pred_type = args.pred_type
+	nTop = args.nTop
+	download = args.download
+	# make sure that flags are right
+	if use_rgb and use_oflow:
+		raise ValueError("""ERROR : both rgb and oflow flags are on.
+						 trying to use both? set both flag to 'False'""")
+	if not pred_type == "word" and not pred_type == "sentence":
+		raise ValueError(f"ERROR : pred_type should be 'word' or 'sentence'")
+
+	# print informative messages for what will be used next
+	print_sys_info(args) 
+
+
+	# download model weights and labels
+	if download:
+		from checkpoints.download import download_sys
+		print(f"downloading weights and lables for {system_name} system.")
+		download_sys(system_name,"checkpoitns"+os.sep+system_name)
+
+	if on_cpu:
+		os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+		os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+	# load labels
+	print(f"loading labels from {labels_dir}.")
+	labels = csv_to_dict(labels_dir,LABELS_SWORD_COL)
+	print(f"{len(labels)} word found in {labels_dir}")
+
+
+	# load models
+	# [TODO] run function to download models
+	uploading_time = time.time()
+	print("Initializing models")
+	models = load_models(models_dir,
+							on_cpu,
+							use_rgb,
+							use_oflow,
+							use_lstm)
+	print(f"Uploading took {round(time.time()-uploading_time,2)} sec")
+
+
+	# run some server with flags cpu gpu pred_type nTop
+	# if wamp
+	if run_method == "wamp":
+		print("running wamp server.")
+		from run.wamp import run_server 
+
+		php_webservice = args.php_webservice
+		wamp_folder = args.wamp_folder
+		if not os.path.exists(wamp_folder):
+			raise ValueError(f"ERROR : can't find wamp service in {wamp_folder} directory")
+
+		# running wamp server
+		run_server(php_webservice,
+				wamp_folder,
+				models,
+				labels,
+				pred_type,
+				nTop)
+	
+	elif run_method == "webcam":
+		print("testing system on webcam, to close webcam press 'q'.")
+		from run.webcam import test
+
+		test(models,
+			labels,
+			pred_type,
+			nTop)
+
+	elif run_method == "REST_API":
+		print("Initiate REST API server ...")
+
+		
