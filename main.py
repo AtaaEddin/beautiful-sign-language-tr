@@ -2,17 +2,17 @@ import argparse
 import os 
 import glob
 import time 
-
 import sys
 sys.path.insert(0,'./utils')
 
 from utils.util import load_models,csv_to_dict
 
+
 CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
 LABELS = "classes"
 LABELS_SWORD_COL = "sWord"
-
+_2stream = []
 
 def get_sys_info(sys_name):
 	
@@ -95,7 +95,7 @@ if __name__ == '__main__' :
 		'--wamp_project',
 		dest='wamp_folder',
 		type=str,
-		default='D:/wamp64/www/combine/',
+		default='/opt/lampp/htdocs/combine/',
 		help='path to the wamp project.')
 	################
 	parser.add_argument(
@@ -117,7 +117,7 @@ if __name__ == '__main__' :
 		'--oflow_only',
 		dest='use_oflow',
 		type=bool,
-		default=True,
+		default=False,
 		help='just use optical flow stream.')
 	parser.add_argument(
 		'-on_cpu',
@@ -147,6 +147,27 @@ if __name__ == '__main__' :
 		type=bool,
 		default=False,
 		help='download weights and classes to checkpoints directory.')
+	parser.add_argument(
+		'-mul_oflow',
+		'--multiprocessing_opticalflow',
+		dest='mul_oflow',
+		type=bool,
+		default=True,
+		help="faster optical flow calculation with multiprocessing.")
+	parser.add_argument(
+		'-oflow_pnum',
+		'--oflow_process_num',
+		dest='oflow_pnum',
+		type=int,
+		default=2,
+		help="number of processes to calculate optical flow.")
+	parser.add_argument(
+		'-mul_2stream',
+		'--multiprocessing_two_stream',
+		dest='mul_2stream',
+		type=bool,
+		default=True,
+		help='run two stream on different processes.')
 	# CPU OR GPU
 	# HOW MUCH FRACTION ON GPU DO YOU WANT TO USE 
 	# WHICH GPU TO RUN ON
@@ -177,13 +198,23 @@ if __name__ == '__main__' :
 	pred_type = args.pred_type
 	nTop = args.nTop
 	download = args.download
-	# make sure that flags are right
+	mul_oflow = args.mul_oflow
+	oflow_pnum = args.oflow_pnum
+	mul_2stream = args.mul_2stream
+	# make sure that flags are set properlly
 	if use_rgb and use_oflow:
 		raise ValueError("""ERROR : both rgb and oflow flags are on.
 						 trying to use both? set both flag to 'False'""")
 	if not pred_type == "word" and not pred_type == "sentence":
-		raise ValueError(f"ERROR : pred_type should be 'word' or 'sentence'")
-
+		raise ValueError("ERROR : pred_type should be 'word' or 'sentence'")
+	con = mul_oflow and not oflow_pnum > 0
+	#notcon = not mul_oflow and oflow_pnum > 0 
+	if con:
+		raise ValueError("ERROR : check mul_oflow and oflow_pnum flags.")
+	if not on_cpu and mul_2stream:
+		raise ValueError("ERROR : you can't use multiprocessing on streams while the system is running on gpu.")  
+	if (use_rgb or use_oflow) and mul_2stream:
+		raise ValueError("ERROR : you can't do multiprocessing while using just one stream!.")
 	# print informative messages for what will be used next
 	print_sys_info(args) 
 
@@ -205,7 +236,6 @@ if __name__ == '__main__' :
 
 
 	# load models
-	# [TODO] run function to download models
 	uploading_time = time.time()
 	print("Initializing models")
 	models = load_models(models_dir,
@@ -233,7 +263,10 @@ if __name__ == '__main__' :
 				models,
 				labels,
 				pred_type,
-				nTop)
+				nTop,
+				mul_oflow,
+				oflow_pnum,
+				mul_2stream)
 	
 	elif run_method == "webcam":
 		print("testing system on webcam, to close webcam press 'q'.")
@@ -242,9 +275,20 @@ if __name__ == '__main__' :
 		test(models,
 			labels,
 			pred_type,
-			nTop)
+			nTop,
+			mul_oflow,
+			oflow_pnum,
+			mul_2stream)
 
 	elif run_method == "REST_API":
 		print("Initiate REST API server ...")
+		from run.REST_API import server
 
-		
+		server.run(models,
+					labels,
+					pred_type,
+					nTop,
+					mul_oflow,
+					oflow_pnum,
+					mul_2stream,
+					port=5000)
