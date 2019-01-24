@@ -28,7 +28,7 @@ def work(url, sec_sleep=2):
 	fpath = ""
 	global id_and_prediction_q
 	global ids_fpaths_q
-	print(f"SERVER will check for new entry every {sec_sleep} sec")
+	#print(f"SERVER will check for new entry every {sec_sleep} sec")
 	print("SERVER listening....")
 	lock = False
 	id_and_prediction = None
@@ -73,12 +73,12 @@ def get_vid_dirs(url):
 
 	if resp == None:
 		return None
-		
 	resp = resp.content.decode()
 	try:
 		resp = json.loads(resp)
 	except Exception as e:
 		print(e,"\nEither no data or worng formated data received.")
+
 
 	if resp["message"] == "Data Yok":
 		return None
@@ -91,7 +91,7 @@ def get_vid_dirs(url):
 def post_vid_results(url, vid_id:int, keywords:list):
 	mydata = {"operationtype" : "update_videos", "id":vid_id}
 	mydata["keywords"] = json.dumps(keywords)
-	
+	print("post_vid_results called")
 	resp = requests.post(url, data=mydata)
 	
 
@@ -121,7 +121,10 @@ def run_server(php_webservice,
 			models,
 			labels,
 			pred_type,
-			nTop):
+			nTop,
+			mul_oflow,
+			oflow_pnum,
+			mul_2stream):
 
 	global id_and_prediction
 	global ids_fpaths_q
@@ -147,7 +150,7 @@ def run_server(php_webservice,
 				raise ValueError("[ERROR]: Incorrect pathing to the videos - (check videos dirctories).")
 			
 			predictions = handler(wamp_folder + vid_path, lstmModel, 
-								rgb_model, oflow_model, labels, pred_type, nTop)
+								rgb_model, oflow_model, labels, pred_type, nTop,mul_oflow,oflow_pnum,mul_2stream)
 
 			if not id_and_prediction_q.full() and vid_id in processed_vid:
 				id_and_prediction_q.put((vid_id,predictions))
@@ -155,19 +158,3 @@ def run_server(php_webservice,
 			result = None
 
 
-if __name__ == '__main__':
-
-	i3d_models = {"oflow" : "./checkpoints/weights/last_trained_model/20181225-1016-chalearn035-oflow-i3d-entire-best_0.26_0.96.h5",#"./model/10_turkish_class/20181129-1002-chalearn035-oflow-i3d-entire-best.h5",
-	"rgb" : None}#"./checkpoints/weights/last_trained_model/20181224-1648-chalearn035-rgb-i3d-entire-best_0.32_0.96.h5"}#"./model/20class/20181129-0800-chalearn035-rgb-i3d-entire-best_acc_98.h5"}
-	LSTM = None#"./model/10_turkish_class/-1543523779-last_best_so_far_LSTM_FC_256.h5"
-	
-	"""
-	start_SLD_server(host_url="http://localhost/combine/webservices.php",
-					host_root="D:/wamp64/www/combine/",
-					use_Edited_Model = True,
-					i3d_models=i3d_models,
-					LSTM_model=LSTM,
-					csvFile_dir="./turkish_classes.csv")
-	"""
-	
-	test_on_ubuntu(i3d_models,LSTM)

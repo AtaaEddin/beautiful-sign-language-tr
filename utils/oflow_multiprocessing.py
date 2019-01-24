@@ -2,7 +2,7 @@ from opticalflow import OpticalFlow
 import numpy as np
 from multiprocessing import Process, Manager
 from collections import OrderedDict
-
+import cv2
 
 def calculate_oflow(rgbFrames, return_dict, indx, prev_f):
 	#print(f"proess {indx} running got rgbFrames {rgbFrames.shape}")

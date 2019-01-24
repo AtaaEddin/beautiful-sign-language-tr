@@ -5,7 +5,7 @@ import cv2
 def record_video():
 	# record a video from webcam 
 
-	video_name = "./outpy.avi"
+	video_name = "./tmp/outpy.avi"
 	cap = cv2.VideoCapture(0)
 	video_size = (int(cap.get(3)),int(cap.get(4)))
 
@@ -37,14 +37,14 @@ def record_video():
 			pred_type,
 			nTop):
 """
-def test(models, labels, pred_type, nTop):
+def test(models, labels, pred_type, nTop, mul_oflow, oflow_pnum, mul_2stream):
 	
 	rgb_model,oflow_model,lstmModel = models["rgb"],models["oflow"],models["lstm"]
-
+	#video_dir = "./tmp/outpy.avi"
 	video_dir = record_video()
-	print(video_dir)
+	#print(video_dir)
 	predictions = handler(video_dir,lstmModel,rgb_model,oflow_model,
-	labels,pred_type,nTop)
+						labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream)
 
 	print(predictions)
 

@@ -6,13 +6,13 @@ import pandas as pd
 
 from frame import frames_downsample, images_rescale
 from opticalflow import OpticalFlow, frames2flows
-from predict import get_predicts,i3d_LSTM_prediction
+from predict import get_predicts,i3d_LSTM_prediction,sent_preds
 
 from datagenerator import VideoClasses
 
 from oflow_multiprocessing import process_oflow
 
-def vid2frames(vid, oflow):
+def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
 
 	# Extract frames of a video and then normalize it to fixed-length 
 	# Then make optical flow and RGB lists
@@ -20,7 +20,6 @@ def vid2frames(vid, oflow):
 	# Input : video(Stream), RGB(Boolean), oflow(Boolean)
 
 	# Output : RGB-list, oflow-list
-
 	rgbFrames,oflowFrames = None,None	
 	
 	tuRectangle = (224, 224)
@@ -46,44 +45,50 @@ def vid2frames(vid, oflow):
 	#rgbFrames = image_normalize(np.array(rgbFrames), 40)
 	if len(rgbFrames) < 40:
 		if oflow:
-			oflowFrames = process_oflow(rgbFrames, 2) #frames2flows(rgbFrames)
+			if mul_oflow:
+				oflowFrames = process_oflow(rgbFrames, oflow_pnum) 
+			else:
+				oflowFrames = frames2flows(rgbFrames)
+			oflowFrames = frames_downsample(oflowFrames, 40)
 		rgbFrames = frames_downsample(np.array(rgbFrames), 40)
-		oflowFrames = frames_downsample(oflowFrames, 40)
 	else:
-		rgbFrames = frames_downsample(np.array(rgbFrames), 40)
+		if pred_type!="sentence":
+			rgbFrames = frames_downsample(np.array(rgbFrames), 40)
 		if oflow:
-			oflowFrames = process_oflow(rgbFrames, 2) #frames2flows(rgbFrames)
+			if mul_oflow:
+				oflowFrames = process_oflow(rgbFrames, oflow_pnum) 
+			else:
+				oflowFrames = frames2flows(rgbFrames)
 
 
 	rgbFrames = images_rescale(rgbFrames)
 
 	#print(rgbFrames.shape)
 	#print(oflowFrames.shape)
-
+	print(f"oflowFrames.shape: {oflowFrames.shape }")
 	return rgbFrames, oflowFrames, frame_num
 
 
-def handler(vid_dir, lstmModel, rgb_model, oflow_model, labels, pred_type, nTop):
+def handler(vid_dir, lstmModel, rgb_model, oflow_model, labels, pred_type, nTop, mul_oflow, oflow_pnum,mul_2stream):
 
 	predictions = None
-
 	vid = cv2.VideoCapture(vid_dir)
 
 	print("Preprocessing data")
 	preprocessing_time = time.time()
-	rgbs,oflows,frame_num = vid2frames(vid,oflow_model is not None)
+	rgbs,oflows,frame_num = vid2frames(vid,oflow_model is not None,pred_type,mul_oflow,oflow_pnum)
 	print(f"preprocessing data took {round(time.time()-preprocessing_time,2)} sec") 
 
 	print("running a prediction process ...")
 	predictions_time = time.time()
 	if pred_type == "word":
 		if not lstmModel is None:
-			predictions = i3d_LSTM_prediction(rgbs, oflows, labels, lstmModel, rgb_model, oflow_model, nTop)
+			predictions = i3d_LSTM_prediction(rgbs,oflows,labels,lstmModel,rgb_model,oflow_model,nTop,mul_2stream)
 		else:
-			predictions = get_predicts(rgbs, oflows, labels, oflow_model, rgb_model, nTop)
+			predictions = get_predicts(rgbs,oflows,labels,oflow_model,rgb_model,nTop,mul_2stream)
 	elif pred_type == "sentence":
 		sent_preds(rgbs,oflows,frame_num,labels,lstmModel,rgb_model,oflow_model,
-			nTop,frames_to_process=30,stride=10,threshold=40)
+					nTop,mul_2stream,frames_to_process=30,stride=10,threshold=40)
 	else:
 		raise ValueError("ERROR : unkown pred_type flag.")
 	print(f"prediction took {round(time.time()-predictions_time,2)} sec")
@@ -138,6 +143,10 @@ def load_models(models_dir,
 		models['rgb'] = load_model(models_dir["rgb"])
 		check('oflow')
 		models['oflow'] = load_model(models_dir["oflow"])
+	
+	for k,v in models.items():
+		if v is not None:
+			v._make_predict_function()
 		
 	return models
 
