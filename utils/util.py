@@ -1,18 +1,15 @@
-
 import cv2
 import numpy as np
 import time
 import pandas as pd
 
-from frame import frames_downsample, images_rescale
-from opticalflow import OpticalFlow, frames2flows
-from predict import get_predicts,i3d_LSTM_prediction,sent_preds
-
-from datagenerator import VideoClasses
-
-from oflow_multiprocessing import process_oflow
+from globalVariables import data,res_dict,_2stream,ret_dict
 
 def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
+	from frame import frames_downsample, images_rescale
+	from opticalflow import OpticalFlow, frames2flows
+	from oflow_multiprocessing import process_oflow
+
 
 	# Extract frames of a video and then normalize it to fixed-length 
 	# Then make optical flow and RGB lists
@@ -63,32 +60,81 @@ def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
 
 	rgbFrames = images_rescale(rgbFrames)
 
-	#print(rgbFrames.shape)
-	#print(oflowFrames.shape)
-	print(f"oflowFrames.shape: {oflowFrames.shape }")
 	return rgbFrames, oflowFrames, frame_num
 
 
-def handler(vid_dir, lstmModel, rgb_model, oflow_model, labels, pred_type, nTop, mul_oflow, oflow_pnum,mul_2stream):
+def handler(vid_dir,
+			lstmModel,
+			rgb_model,
+			oflow_model,
+			labels,
+			pred_type,
+			nTop,
+			mul_oflow,
+			oflow_pnum,
+			mul_2stream,
+			from_worker=False):
+	
+	global ret_dict
+	global data
+	global res_dict
 
 	predictions = None
-	vid = cv2.VideoCapture(vid_dir)
+	rgbs = None
+	oflows = None
+	frame_num = None
+	if not from_worker:
 
-	print("Preprocessing data")
-	preprocessing_time = time.time()
-	rgbs,oflows,frame_num = vid2frames(vid,oflow_model is not None,pred_type,mul_oflow,oflow_pnum)
-	print(f"preprocessing data took {round(time.time()-preprocessing_time,2)} sec") 
+		for k,_ in res_dict.items():
+			res_dict[k] = []
 
+		vid = cv2.VideoCapture(vid_dir)
+
+		print("Preprocessing data")
+		preprocessing_time = time.time()
+		rgbs,oflows,frame_num = vid2frames(vid,oflow_model is not None,pred_type,mul_oflow,oflow_pnum)
+		print(f"preprocessing data took {round(time.time()-preprocessing_time,2)} sec") 
+
+	if mul_2stream:
+		
+		print("filling data dict with values.")
+		data['rgb'] = rgbs
+		data['oflow'] = oflows
+		data['frame_num'] = frame_num
+		print("finished filling.")
+
+		#for p in _2stream:
+		#	p.join()
+
+		while True:
+			if len(res_dict['rgb']) > 0 and len(res_dict['oflow']) > 0 :
+				break
+			elif len(res_dict['lstm']) > 0:
+				break 
+
+		print("some results returned from processes.")
+
+		if len(res_dict['lstm']) > 0:
+			return res_dict['lstm']
+		else:
+			rgb_arProbas = res_dict['rgb']
+			oflow_arProbas = res_dict['oflow']
+			return concate(rgb_arProbas,oflow_arProbas,labels,nTop)
+
+	from predict import get_predicts,i3d_LSTM_prediction,sent_preds
 	print("running a prediction process ...")
 	predictions_time = time.time()
+	rgbs = rgbs if not from_worker else data['rgb']
+	oflows = oflows if not from_worker else data['oflow']
 	if pred_type == "word":
 		if not lstmModel is None:
-			predictions = i3d_LSTM_prediction(rgbs,oflows,labels,lstmModel,rgb_model,oflow_model,nTop,mul_2stream)
+			predictions = i3d_LSTM_prediction(rgbs,oflows,labels,lstmModel,rgb_model,oflow_model,nTop,from_worker)
 		else:
-			predictions = get_predicts(rgbs,oflows,labels,oflow_model,rgb_model,nTop,mul_2stream)
+			predictions = get_predicts(rgbs,oflows,labels,oflow_model,rgb_model,nTop,from_worker)
 	elif pred_type == "sentence":
-		sent_preds(rgbs,oflows,frame_num,labels,lstmModel,rgb_model,oflow_model,
-					nTop,mul_2stream,frames_to_process=30,stride=10,threshold=40)
+		sent_preds(rgbs,oflows,frame_num if not from_worker else data['frame_num'],labels,lstmModel,rgb_model,oflow_model,
+					nTop,frames_to_process=30,stride=10,threshold=40)
+	
 	else:
 		raise ValueError("ERROR : unkown pred_type flag.")
 	print(f"prediction took {round(time.time()-predictions_time,2)} sec")
@@ -110,7 +156,8 @@ def load_models(models_dir,
 				on_cpu,
 				use_rgb,
 				use_oflow,
-				use_lstm):
+				use_lstm,
+				only_lstm):
 	
 	from keras.models import load_model
 	
@@ -128,6 +175,8 @@ def load_models(models_dir,
 	elif use_oflow:
 		check('oflow')
 		models['oflow'] = load_model(models_dir["oflow"])
+	elif only_lstm:
+		models['lstm'] = load_model(models_dir["cpu"])
 	elif use_lstm:
 		check('rgb')
 		models['rgb'] = load_model_without_topLayer(models_dir["rgb"])
@@ -151,8 +200,19 @@ def load_models(models_dir,
 	return models
 
 def csv_to_dict(labels_dir,sWord_col):
-    df = pd.read_csv(labels_dir)
-    return dict(enumerate(df[sWord_col].tolist()))
+	df = pd.read_csv(labels_dir)
+	return dict(enumerate(df[sWord_col].tolist()))
+
+def concate(oflow_arProbas,rgb_arProbas,labels,nTop):
+	arProbas = np.concatenate((oflow_arProbas,rgb_arProbas), axis=0)
+	arProbas = np.mean(arProbas, axis=0)
+	index = arProbas.argsort()[-nTop:][::-1]
+	arTopProbas = arProbas[index]
+	results = []
+	for i in range(nTop):
+		results.append({labels[index[i]] : round(arTopProbas[i]*100.,2)})
+
+	return results
 
 """
 def dropped_cudnn_model(model):

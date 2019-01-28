@@ -3,23 +3,34 @@ import glob
 import sys
 import warnings
 import time
-from multiprocessing import Process, Manager
 import numpy as np
 import pandas as pd
 
 from datagenerator import FeaturesGenerator
 from frame import frames_downsample
+from globalVariables import ret_dict,res_dict,data
+from util import concate
 
+def i3d_LSTM_prediction(rgbFrames,
+                        oflowFrames,
+                        labels,
+                        LSTM_model,
+                        rgb_model,
+                        oflow_model,
+                        nTop,
+                        mul_2stream,
+                        from_worker):
+    global data
+    global res_dict
+    rgbProbas = None
+    oflowProbas = None
 
-
-ret_dict = Manager().dict()
-
-
-def i3d_LSTM_prediction(rgbFrames, oflowFrames, labels, LSTM_model, rgb_model, oflow_model, nTop, mul_2stream):
-    
-    rgbProbas = rgb_model.predict(np.expand_dims(rgbFrames, axis=0))
-    oflowProbas = oflow_model.predict(np.expand_dims(oflowFrames, axis=0))
-
+    if not from_worker: 
+        rgbProbas = rgb_model.predict(np.expand_dims(rgbFrames, axis=0))
+        oflowProbas = oflow_model.predict(np.expand_dims(oflowFrames, axis=0))
+    else:
+        rgbProbas,oflowProbas = data['lstm'] 
+        
     LSTM_input = np.concatenate((rgbProbas,oflowProbas), axis=-1)
 
     arProbas_i = LSTM_model.predict(LSTM_input)
@@ -32,47 +43,56 @@ def i3d_LSTM_prediction(rgbFrames, oflowFrames, labels, LSTM_model, rgb_model, o
     for i in range(nTop):
         results.append({labels[indx[i]] : round(arTopProbas[i]*100.,2)})
 
-    return results
+    if from_worker:
+        res_dict['lstm'] = results
+    else:
+        return results
 
 
-def get_predicts(rgbFrames, oflowFrames, labels, oflow_model, rgb_model, nTop, mul_2stream):
-    import keras
-    oflow_arProbas = []
-    rgb_arProbas = []
+def get_predicts(rgbFrames, oflowFrames, labels, oflow_model, rgb_model, nTop, from_worker):
+    global ret_dict
+    global res_dict
+    oflow_arProbas = None
+    rgb_arProbas = None
     results = []
-    jobs = []
-    if oflow_model is not None:
-        if rgb_model is None:
-            results,_ = predict(oflowFrames,oflow_model,labels,nTop,mul_2stream)
-            return results
-        else:
-            if mul_2stream:
-                p1 = Process(target=predict, args=(oflowFrames,oflow_model,labels,nTop,mul_2stream))
-                p1.start()   
-                jobs.append(p1)
-                p1.join()
-            else:
-                _,oflow_arProbas = predict(oflowFrames,oflow_model,labels,nTop,mul_2stream)
-    if rgb_model is not None:
-        if oflow_model is None:
-            results,_ = predict(rgbFrames, rgb_model,labels,nTop,mul_2stream)
-            return results
-        else:
-            if mul_2stream:
-                p2 = Process(target=predict, args=(rgbFrames,rgb_model,labels,nTop,mul_2stream))
-                p2.start()   
-                jobs.append(p2)
-            else:
-                _,rgb_arProbas = predict(rgbFrames, rgb_model,labels,nTop,mul_2stream)
+    for_worker_acc = False
 
-    if oflow_model is not None and rgb_model is not None:
-        if mul_2stream:
-            print("2 process are working")
-            for p in jobs:
-                p.join()
-            oflow_arProbas = ret_dict["oflow"]
-            rgb_arProbas = ret_dict["rgb"]
-        print("we did it !!")
+    if oflow_model is not None:
+        if rgb_model is None and not from_worker:
+            results,_ = predict(oflowFrames,oflow_model,labels,nTop)
+            return results
+        else:
+            _,oflow_arProbas = predict(oflowFrames,oflow_model,labels,nTop)
+    if rgb_model is not None:
+        if oflow_model is None and not from_worker:
+            results,_ = predict(rgbFrames, rgb_model,labels,nTop)
+            return results
+        else:
+            _,rgb_arProbas = predict(rgbFrames, rgb_model,labels,nTop)
+
+    if from_worker:
+            #if len(oflowFrames) > 0 and oflowFrames is not None:
+            if rgb_model:
+                print(rgb_arProbas.shape) 
+                res_dict['rgb'] = rgb_arProbas
+                data['lstm'][0] = rgb_arProbas
+            #if len(rgbFrames) > 0 and rgbFrames is not None:
+            if oflow_model:
+                print(oflow_arProbas.shape) 
+                res_dict['oflow'] = oflow_arProbas
+                data['lstm'][1] = oflow_arProbas
+            """    
+            if (ret_dict['rgb'] is not None and len(ret_dict['rgb']) > 0) and\
+                (ret_dict['oflow'] is not None and len(ret_dict['oflow']) > 0):
+                                                
+                ret_dict['lstm'] = (ret_dict['rgb'],ret_dict['oflow'])                     
+                for_worker_acc = True
+                oflow_arProbas = ret_dict['oflow']
+                rgb_arProbas = ret_dict['rgb']
+            """
+    if oflow_model is not None and rgb_model is not None :
+        results = concate(oflow_arProbas,rgb_arProbas)
+        """
         arProbas = np.concatenate((oflow_arProbas,rgb_arProbas), axis=0)
         arProbas = np.mean(arProbas, axis=0)
         index = arProbas.argsort()[-nTop:][::-1]
@@ -80,19 +100,17 @@ def get_predicts(rgbFrames, oflowFrames, labels, oflow_model, rgb_model, nTop, m
 
         for i in range(nTop):    
             results.append({labels[index[i]] : round(arTopProbas[i]*100.,2)})
-
+               
         return results
-    else:
-        raise ValueError("[Prediction Error]: No model found.")
+        """
+    return results
 
-def predict(Frames, i3d_model, labels, nTop,mul_2stream):
+
+def predict(Frames, i3d_model, labels, nTop):
 
     results = []
     print("i will predict ")
-    try:
-        arProbas_i = i3d_model.predict(np.expand_dims(Frames, axis=0))
-    except Exception as e:
-        print(e)
+    arProbas_i = i3d_model.predict(np.expand_dims(Frames, axis=0))
 
     arProbas = arProbas_i[0]
     indx = arProbas.argsort()[-nTop:][::-1]
@@ -100,19 +118,13 @@ def predict(Frames, i3d_model, labels, nTop,mul_2stream):
     print("finsih predicting")
     for i in range(nTop):    
         results.append({labels[indx[i]] : round(arTopProbas[i]*100.,2)})
-
-    if mul_2stream:
-        if Frames.shape[-1] == 2:
-            ret_dict["oflow"] = arProbas_i
-        else:
-            ret_dict["rgb"] = arProbas_i
-    else:
-        return results,arProbas_i
+    
+    return results,arProbas_i
 
 
 
 def sent_preds(rgbs,oflows,frames_count,labels,lstmModel,rgb_model,oflow_model,
-    nTop,mul_2stream,frames_to_process=30,stride=10,threshold=40):
+    nTop,frames_to_process=30,stride=10,threshold=40):
     pos = 0
     results = []
     #print("rgbs.shape:",rgbs.shape)

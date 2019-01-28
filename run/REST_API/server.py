@@ -26,7 +26,6 @@ class request_handler(object):
 
 	@classmethod
 	def handle(cls, vid_dir):
-		print(f"lstm: {cls.models['lstm']}, rgb: {cls.models['rgb']}, oflow: {cls.models['oflow']}")
 
 		reuslts = handler(vid_dir,
 							cls.models['lstm'],
@@ -61,7 +60,7 @@ def predict():
 
 
 
-def run(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,host="127.0.0.1",port=5000):
+def run(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream,host="127.0.0.1",port=5000):
 	request_handler.init(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream)
 	app.run(host=host,port=port)
 

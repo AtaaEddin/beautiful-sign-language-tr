@@ -1,4 +1,3 @@
-from utils.util import handler,load_models
 import time
 import cv2
 
@@ -38,13 +37,16 @@ def record_video():
 			nTop):
 """
 def test(models, labels, pred_type, nTop, mul_oflow, oflow_pnum, mul_2stream):
-	
+	imports()	
 	rgb_model,oflow_model,lstmModel = models["rgb"],models["oflow"],models["lstm"]
 	#video_dir = "./tmp/outpy.avi"
 	video_dir = record_video()
 	#print(video_dir)
+	from utils.util import handler
 	predictions = handler(video_dir,lstmModel,rgb_model,oflow_model,
 						labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream)
 
 	print(predictions)
 
+def imports():
+	pass

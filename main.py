@@ -3,16 +3,15 @@ import os
 import glob
 import time 
 import sys
+
+from multiprocessing import Process
 sys.path.insert(0,'./utils')
 
-from utils.util import load_models,csv_to_dict
-
+from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
 
 CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
 LABELS = "classes"
-LABELS_SWORD_COL = "sWord"
-_2stream = []
 
 def get_sys_info(sys_name):
 	
@@ -72,7 +71,7 @@ if __name__ == '__main__' :
 		'--run',
 		dest='run_method',
 		type=str,
-		default='webcam',
+		default='REST_API',
 		help='choose a way to test the sign language system.')
 	parser.add_argument(
 		'-sys',
@@ -229,21 +228,43 @@ if __name__ == '__main__' :
 		os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 		os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-	# load labels
-	print(f"loading labels from {labels_dir}.")
+
+	from collections import defaultdict
+
+	models = defaultdict(lambda : None)
+	from utils.util import load_models,csv_to_dict
 	labels = csv_to_dict(labels_dir,LABELS_SWORD_COL)
-	print(f"{len(labels)} word found in {labels_dir}")
+		
+	if not mul_2stream:
 
+		# load labels
+		print(f"loading labels from {labels_dir}.")
+		labels = csv_to_dict(labels_dir,LABELS_SWORD_COL)
+		print(f"{len(labels)} word found in {labels_dir}")
 
-	# load models
-	uploading_time = time.time()
-	print("Initializing models")
-	models = load_models(models_dir,
-							on_cpu,
-							use_rgb,
-							use_oflow,
-							use_lstm)
-	print(f"Uploading took {round(time.time()-uploading_time,2)} sec")
+		# load models
+		uploading_time = time.time()
+		print("Initializing models")
+		models = load_models(models_dir,
+								on_cpu,
+								use_rgb,
+								use_oflow,
+								use_lstm,
+								False)
+		print(f"Uploading took {round(time.time()-uploading_time,2)} sec")
+	else:
+		models['oflow'] = 1
+		from utils.parallel_streams import nn_work
+
+		_2stream.append(Process(target=nn_work, args=('oflow',models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum)))
+		_2stream.append(Process(target=nn_work, args=('rgb',models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum)))
+		if use_lstm:
+			_2stream.append(Process(target=nn_work, args=('oflow',models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum)))
+
+		for p in _2stream:
+			p.start()
+
+		print(f"{len(_2stream)} process has been initialized.")
 
 
 	# run some server with flags cpu gpu pred_type nTop
