@@ -1,6 +1,4 @@
 """
-https://github.com/FrederikSchorr/sign-language
-
 Calculate optical flow from frames(=images) and save to disc
 """
 

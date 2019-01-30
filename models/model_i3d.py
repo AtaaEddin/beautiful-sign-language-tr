@@ -30,7 +30,8 @@ from keras.layers import Reshape
 from keras.layers import Lambda
 from keras.layers import GlobalAveragePooling3D
 from keras.layers import CuDNNLSTM as LSTM
-
+from keras.layers import TimeDistributed
+from keras.layers import Bidirectional
 
 from keras.engine.topology import get_source_inputs
 from keras.utils import layer_utils
@@ -584,13 +585,19 @@ def Inception_Inflated3d(include_top=True,
 
     return model
 
+def load_model_without_topLayer(model_path, last_desire_layer="global_avg_pool"):
+    
+    base_model = load_model(model_path)
 
+    model_no_top = Model(inputs=base_model.input, outputs=base_model.get_layer(last_desire_layer).output)
+
+    return model_no_top
 
 def add_lstm_layers(base_model, classes, dropout = 0.5):
 
     top_model = lstm_model(base_model.output_shape[1:], classes, dropout)
 
-    #print("top_model.summary:", top_model.summary())
+    print("top_model.summary:", top_model.summary())
 
     x = base_model.output
 
@@ -601,26 +608,60 @@ def add_lstm_layers(base_model, classes, dropout = 0.5):
 
     return new_model
 
-def lstm_model(input_shape, classes, dropout=0.5):
+def lstm_model(input_shape, classes, dropout=0.8):
     
     inputs = Input(shape = input_shape, name = "input")
-    x = Dropout(dropout)(inputs)
+    #x = Dropout(dropout)(inputs)
     
-    print("output_shape:", x.shape)
-    num_frames_remaining = int(x.shape[1])
-    x = Reshape((num_frames_remaining,x.shape[-1].value))(x)
+    #print("output_shape:", x.shape)
+    
+    num_frames_remaining = int(inputs.shape[1])
+    x = Reshape((num_frames_remaining,inputs.shape[-1].value))(inputs)
 
+    #x = Lambda(lambda x: K.mean(x, axis=1, keepdims=False),
+                #output_shape=lambda s: (s[0], s[2]))(x)
+    
     #x = Lambda(lambda x: K.permute_dimensions(x, (0,2,1)))(x)
 
     print("output_shape:", x.shape)
-    print(type(x))
-    x = LSTM(512, return_sequences=True, name="LSTM_1a")(x)
+    
+    
+    
+    
+    
+    x = Bidirectional(LSTM(2048, name="LSTM_2a"))(x)
+    x = BatchNormalization()(x)
     x = Dropout(dropout)(x)
-
-    x = LSTM(512)(x)
+    
+    
+    #x = LSTM(1024, return_sequences=True, name="LSTM_1b")(x)
+    #
+    #print("using LSTM one dir")
+    #x = LSTM(2048, name="LSTM_1b")(x)
+    #x = BatchNormalization()(x)
+    #x = Dropout(dropout)(x)
+    
+    #x = Dropout(dropout)(x)
+    #print("using Dense only")
+    #x = Dense(2048, activation='relu', name="FC_1")(inputs)
+    #x = BatchNormalization()(x)
+    #x = TimeDistributed(Dense(256, activation='relu', name="FC_1"))(x)
+    #x = Dropout(0.5)(x)
+    
+    x = Dense(512, activation='relu', name="FC_1")(x)
+    x = BatchNormalization()(x)
     x = Dropout(dropout)(x)
+    
+    #x = Dense(128, activation='relu', name="FC_3")(x)
+    #x = BatchNormalization()(x)
+    #x = Dropout(dropout)(x)
 
-    predictions = Dense(classes, activation='softmax', name="LSTM_2a")(x)
+    
+    #x = Dense(128, activation='relu', name="FC_2")(x)
+    #x = Dropout(dropout)(x)
+
+    
+    predictions = Dense(classes, activation='softmax', name="LSTM_3a")(x)
 
     lstmModel = Model(inputs = inputs, output = predictions, name = "i3d_top_LSTM")
 
@@ -687,8 +728,9 @@ def I3D_load(sPath:str, nFramesNorm:int, tuImageShape:tuple, nClasses:int) -> Mo
 
     return keModel
 
-"""
 
+
+"""
 model = Inception_Inflated3d(include_top=False,
                 weights=None,
                 input_tensor=None,
@@ -697,6 +739,6 @@ model = Inception_Inflated3d(include_top=False,
                 endpoint_logit=True,
                 classes=35)
 
-model.summary()
-
+#model.summary()
 """
+

@@ -109,7 +109,7 @@ if __name__ == '__main__' :
 		'--rgb_only',
 		dest='use_rgb',
 		type=bool,
-		default=False,
+		default=True,
 		help='just use rgb stream.')
 	parser.add_argument(
 		'-oflow',
@@ -165,7 +165,7 @@ if __name__ == '__main__' :
 		'--multiprocessing_two_stream',
 		dest='mul_2stream',
 		type=bool,
-		default=True,
+		default=False,
 		help='run two stream on different processes.')
 	# CPU OR GPU
 	# HOW MUCH FRACTION ON GPU DO YOU WANT TO USE 
@@ -221,8 +221,9 @@ if __name__ == '__main__' :
 	# download model weights and labels
 	if download:
 		from checkpoints.download import download_sys
-		print(f"downloading weights and lables for {system_name} system.")
-		download_sys(system_name,"checkpoitns"+os.sep+system_name)
+		Dir = CHEKPOINT+os.sep+system_name
+		print(f"downloading weights and lables for {system_name} system to {Dir}.")
+		download_sys(system_name,Dir)
 
 	if on_cpu:
 		os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
@@ -312,4 +313,5 @@ if __name__ == '__main__' :
 					mul_oflow,
 					oflow_pnum,
 					mul_2stream,
+					host="0.0.0.0",
 					port=5000)

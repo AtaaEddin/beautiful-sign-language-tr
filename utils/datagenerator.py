@@ -1,6 +1,4 @@
 """
-https://github.com/FrederikSchorr/sign-language
-
 For neural network training the method Keras.model.fit_generator is used. 
 This requires a generator that reads and yields training data to the Keras engine.
 """
@@ -48,7 +46,6 @@ class FramesGenerator(keras.utils.Sequence):
         print("Detected %d samples in %s ..." % (self.nSamples, sPath))
 
         # extract (text) labels from path
-        self.dfVideos.sFrameDir =  self.dfVideos.sFrameDir.apply(lambda s: s.replace("\\", "/"))
         seLabels =  self.dfVideos.sFrameDir.apply(lambda s: s.split("/")[-2])
         self.dfVideos.loc[:, "sLabel"] = seLabels
             
@@ -210,6 +207,10 @@ class FeaturesGenerator(keras.utils.Sequence):
             arX[i,], arY[i] = self.__data_generation(dfSamplesBatch.iloc[i,:])
 
         # onehot the labels
+        #arY = keras.utils.to_categorical(arY, num_classes=self.nClasses)
+        
+        #arY = np.repeat(np.asarray(arY)[:,np.newaxis,:], 4, axis=1)
+        
         return arX, keras.utils.to_categorical(arY, num_classes=self.nClasses)
 
     def __data_generation(self, seSample:pd.Series) -> (np.array(float), int):
@@ -217,6 +218,121 @@ class FeaturesGenerator(keras.utils.Sequence):
 
         arX = np.load(seSample.sPath)
 
+        return arX, seSample.nLabel
+
+class FeaturesGeneratorTwoStream(keras.utils.Sequence):
+    """Reads and yields (preprocessed) I3D features for Keras.model.fit_generator
+    Generator can be used for multi-threading.
+    Substantial initialization and checks upfront, including one-hot-encoding of labels.
+    """
+
+    def __init__(self, rgbPath:str, oflowPath:str, nBatchSize:int, tuXshape, \
+        liClassesFull:list = None, bShuffle:bool = True):
+        """
+        Assume directory structure:
+        ... / sPath / class / feature.npy
+        """
+
+        'Initialization'
+        self.nBatchSize = nBatchSize
+        self.tuXshape = tuXshape
+        self.bShuffle = bShuffle
+
+        # retrieve all feature files
+        self.dfSamples = pd.DataFrame(sorted(glob.glob(oflowPath + "/*/*.npy")), columns=["oflowPath"])
+        self.dfSamples.loc[:, "rgbPath"] = list(sorted(glob.glob(rgbPath + "/*/*.npy")))
+        #print(self.dfSamples.rgbPath[:10])
+        self.nSamples = len(self.dfSamples)
+        #print("kkk:", self.dfSamples.head(5))
+        if self.nSamples == 0: raise ValueError("Found no feature files in " + rgbPath)
+        print("Detected %d samples in %s ..." % (self.nSamples, rgbPath))
+        
+        #print("here:",self.dfSamples.oflowPath.tolist()[0])
+        # test shape of first sample
+        #arX = np.load(self.dfSamples.oflowPath[0])
+        #if arX.shape != tuXshape : raise ValueError("Wrong feature shape: " + str(arX.shape) + str(tuXshape))
+
+        # test shape of first sample
+        #arX = np.load(self.dfSamples.rgbPath[0])
+        #if arX.shape != tuXshape : raise ValueError("Wrong feature shape: " + str(arX.shape) + str(tuXshape))
+            
+        
+        # extract (text) labels from path
+        seLabels =  self.dfSamples.rgbPath.apply(lambda s: s.split("/")[-2])
+        
+        self.dfSamples.loc[:, "sLabel"] = seLabels
+            
+        # extract unique classes from all detected labels
+        self.liClasses = sorted(list(self.dfSamples.sLabel.unique()))
+
+        # if classes are provided upfront
+        if liClassesFull != None:
+            liClassesFull = sorted(np.unique(liClassesFull))
+            # check detected vs provided classes
+            if set(self.liClasses).issubset(set(liClassesFull)) == False:
+                raise ValueError("Detected classes are NOT subset of provided classes")
+            # use superset of provided classes
+            self.liClasses = liClassesFull
+            
+        self.nClasses = len(self.liClasses)
+
+        # encode labels
+        trLabelEncoder = LabelEncoder()
+        trLabelEncoder.fit(self.liClasses)
+        self.dfSamples.loc[:, "nLabel"] = trLabelEncoder.transform(self.dfSamples.sLabel)
+        
+        self.on_epoch_end()
+        return
+
+    def __len__(self):
+        'Denotes the number of batches per epoch'
+        return int(np.ceil(self.nSamples / self.nBatchSize))
+
+    def on_epoch_end(self):
+        'Updates indexes after each epoch'
+        self.indexes = np.arange(self.nSamples)
+        if self.bShuffle == True:
+            np.random.shuffle(self.indexes)
+
+    def __getitem__(self, nStep):
+        'Generate one batch of data'
+
+        # Generate indexes of the batch
+        indexes = self.indexes[nStep*self.nBatchSize:(nStep+1)*self.nBatchSize]
+
+        # Find selected samples
+        dfSamplesBatch = self.dfSamples.loc[indexes, :]
+        nBatchSize = len(dfSamplesBatch)
+
+        # initialize arrays
+        arX = np.empty((nBatchSize, ) + self.tuXshape, dtype = float)
+        arY = np.empty((nBatchSize), dtype = int)
+
+        #print(arX.shape)
+        # Generate data
+        for i in range(nBatchSize):
+            # generate single sample data
+            arX[i,], arY[i] = self.__data_generation(dfSamplesBatch.iloc[i,:])
+
+        # onehot the labels
+        #arY = keras.utils.to_categorical(arY, num_classes=self.nClasses)
+        
+        #arY = np.repeat(np.asarray(arY)[:,np.newaxis,:], 4, axis=1)
+        
+        return arX, keras.utils.to_categorical(arY, num_classes=self.nClasses)
+
+    def __data_generation(self, seSample:pd.Series) -> (np.array(float), int):
+        'Generates data for 1 sample' 
+
+        oflow = np.load(seSample.oflowPath)
+        
+        rgb = np.load(seSample.rgbPath)
+
+        assert rgb.shape == (4,1,1,1024)
+        arX = np.concatenate((rgb,oflow), axis=-1)
+        
+        
+        #print(f"arX.shape:{arX.shape}, oflow.shape:{oflow.shape}, rbg.shape:{rgb.shape}")
         return arX, seSample.nLabel
 
 
@@ -227,11 +343,10 @@ class VideoClasses():
     """
     def __init__(self, sClassFile:str):
         # load label description: index, sClass, sLong, sCat, sDetail
-        self.dfClass = pd.read_csv(sClassFile, encoding="ISO-8859-1")
-
-        print(self.dfClass.head(2))
+        self.dfClass = pd.read_csv(sClassFile)
+        #print(self.dfClass)
         # sort the classes
-        self.dfClass = self.dfClass.sort_values("sClass").reset_index(drop=True)
+        self.dfClass = self.dfClass.sort_values(by="sClass").reset_index(drop=True)
         
         self.liClasses = list(self.dfClass.sClass)
         self.nClasses = len(self.dfClass)

@@ -1,6 +1,4 @@
 """
-https://github.com/FrederikSchorr/sign-language
-
 Extract frames from a video (or many videos). 
 Plus some frame=image manipulation utilities.
 """

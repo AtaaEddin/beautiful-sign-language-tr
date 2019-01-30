@@ -1,6 +1,4 @@
 """
-https://github.com/FrederikSchorr/sign-language
-
 In some video classification NN architectures it may be necessary to calculate features 
 from the (video) frames, that are afterwards used for NN training.
 
@@ -18,12 +16,11 @@ import numpy as np
 import pandas as pd
 
 import keras
-from model_i3d import load_model_without_topLayer
-
 
 from datagenerator import FramesGenerator
 
 
+from model_i3d import load_model_without_topLayer
 
 
 def features_2D_predict_generator(sFrameBaseDir:str, sFeatureBaseDir:str, keModel:keras.Model, 
@@ -133,6 +130,6 @@ def features_3D_predict_generator(sFrameBaseDir:str, sFeatureBaseDir:str,
     return
 
 
-model_no_top = load_model_without_topLayer("./model/10_turkish_class/20181129-1002-chalearn035-oflow-i3d-entire-best.h5")
+#model_no_top = load_model_without_topLayer("./model/10_turkish_class/20181129-1002-chalearn035-oflow-i3d-entire-best.h5")
 
-features_3D_predict_generator("./oflowdataset/val", "./oflow_featuresdataset/val", model_no_top)
+#features_3D_predict_generator("./oflowdataset/val", "./oflow_featuresdataset/val", model_no_top)
