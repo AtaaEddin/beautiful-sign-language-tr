@@ -3,11 +3,11 @@ import os
 import glob
 import time 
 import sys
-
+print(f"the pwd: {os.getcwd()}")
 from multiprocessing import Process
-#sys.path.insert(0,'./utils')
+sys.path.insert(0,'./app/utils')
 
-from utils.globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
+from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
 
 CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
