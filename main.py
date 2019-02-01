@@ -318,5 +318,4 @@ if __name__ == '__main__' :
 					mul_oflow,
 					oflow_pnum,
 					mul_2stream,
-					host="0.0.0.0",
-					port=5000)
+					host="0.0.0.0")

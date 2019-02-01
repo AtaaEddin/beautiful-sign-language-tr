@@ -60,9 +60,9 @@ def predict():
 
 
 
-def run(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream,host="127.0.0.1",port=5000):
+def run(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream,host="0.0.0.0"):
 	request_handler.init(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream)
-	app.run(host=host,port=port)
+	app.run(host=host)
 
 
 if __name__ == '__main__' :
