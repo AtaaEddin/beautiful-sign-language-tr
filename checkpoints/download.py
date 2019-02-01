@@ -6,10 +6,10 @@ import os
 
 #put here the links to the models to be downloaded
 SYSTEMS = {
-	'turkish_10_word' : {'weights' : {'rgb':'https://github.com/dlpbc/keras-kinetics-i3d/releases/download/v0.2/rgb_inception_i3d_kinetics_only_tf_dim_ordering_tf_kernels_no_top.h5',
-										'oflow':None,
+	'turkish_10_word' : {'weights' : {'rgb':'https://storage.googleapis.com/createabucket/20181129-0800-chalearn035-rgb-i3d-entire-best_acc_98.h5',
+										'oflow':"https://storage.googleapis.com/createabucket/20181129-1002-chalearn035-oflow-i3d-entire-best.h5",
 										'lstm':None},
-										'classes' : 'https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/6/2017/11/04133712/waterfall.jpg'},
+										'classes' : 'https://storage.googleapis.com/createabucket/turkish_classes.csv'},
 
 	'turkish_20_word' : {'weights' : {'rgb':None,
 										'oflow':None,

@@ -109,7 +109,7 @@ if __name__ == '__main__' :
 		'--rgb_only',
 		dest='use_rgb',
 		type=bool,
-		default=True,
+		default=False,
 		help='just use rgb stream.')
 	parser.add_argument(
 		'-oflow',
@@ -165,7 +165,7 @@ if __name__ == '__main__' :
 		'--multiprocessing_two_stream',
 		dest='mul_2stream',
 		type=bool,
-		default=False,
+		default=True,
 		help='run two stream on different processes.')
 	# CPU OR GPU
 	# HOW MUCH FRACTION ON GPU DO YOU WANT TO USE 
@@ -175,18 +175,6 @@ if __name__ == '__main__' :
 	# use just rgb or just oflow
 	# don't use lstm
 	args = parser.parse_args()
-
-	#load checkpoints and labels
-	system_name = args.system_name
-	models_dir,labels_dir = get_sys_info(system_name)
-	# informative message
-	print(f"In {args.system_name} folder:")
-	for k,v in models_dir.items():
-		if v is not None:
-			# informative message
-			print(f"{' '*4}{k.upper()} WEIGHTS found : {v.rsplit(os.sep,1)[-1]}")
-	# informative message
-	print(f"{' '*4}labels : {labels_dir.rsplit(os.sep,1)[-1]}")
 
 	# run test script 
 	run_method = args.run_method
@@ -200,6 +188,27 @@ if __name__ == '__main__' :
 	mul_oflow = args.mul_oflow
 	oflow_pnum = args.oflow_pnum
 	mul_2stream = args.mul_2stream
+	system_name = args.system_name
+
+	# download model weights and labels
+	if download:
+		from checkpoints.download import download_sys
+		Dir = CHEKPOINT+os.sep+system_name
+		print(f"downloading weights and lables for {system_name} system to {Dir}.")
+		download_sys(system_name,Dir)
+
+	#load checkpoints and labels
+	models_dir,labels_dir = get_sys_info(system_name)
+	# informative message
+	print(f"In {args.system_name} folder:")
+	for k,v in models_dir.items():
+		if v is not None:
+			# informative message
+			print(f"{' '*4}{k.upper()} WEIGHTS found : {v.rsplit(os.sep,1)[-1]}")
+	# informative message
+	print(f"{' '*4}labels : {labels_dir.rsplit(os.sep,1)[-1]}")
+
+	
 	# make sure that flags are set properlly
 	if use_rgb and use_oflow:
 		raise ValueError("""ERROR : both rgb and oflow flags are on.
@@ -218,12 +227,7 @@ if __name__ == '__main__' :
 	print_sys_info(args) 
 
 
-	# download model weights and labels
-	if download:
-		from checkpoints.download import download_sys
-		Dir = CHEKPOINT+os.sep+system_name
-		print(f"downloading weights and lables for {system_name} system to {Dir}.")
-		download_sys(system_name,Dir)
+	
 
 	if on_cpu:
 		os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
@@ -242,6 +246,7 @@ if __name__ == '__main__' :
 		print(f"loading labels from {labels_dir}.")
 		labels = csv_to_dict(labels_dir,LABELS_SWORD_COL)
 		print(f"{len(labels)} word found in {labels_dir}")
+
 
 		# load models
 		uploading_time = time.time()
