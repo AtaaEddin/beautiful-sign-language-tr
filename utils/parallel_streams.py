@@ -1,4 +1,4 @@
-from globalVariables import data,LABELS_SWORD_COL
+from utils.globalVariables import data,LABELS_SWORD_COL
 
 def nn_work(model_type,models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum):
 	import time

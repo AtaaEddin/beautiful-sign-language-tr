@@ -3,7 +3,7 @@ import numpy as np
 import time
 import pandas as pd
 
-from globalVariables import data,res_dict,_2stream,ret_dict
+from utils.globalVariables import data,res_dict,_2stream,ret_dict
 
 def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
 	from frame import frames_downsample, images_rescale

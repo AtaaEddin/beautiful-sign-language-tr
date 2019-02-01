@@ -5,9 +5,9 @@ import time
 import sys
 
 from multiprocessing import Process
-sys.path.insert(0,'./utils')
+#sys.path.insert(0,'./utils')
 
-from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
+from utils.globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
 
 CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
