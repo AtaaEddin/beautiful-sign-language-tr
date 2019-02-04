@@ -71,7 +71,7 @@ if __name__ == '__main__' :
 		'--run',
 		dest='run_method',
 		type=str,
-		default='webcam',
+		default='REST_API',
 		help='choose a way to test the sign language system.')
 	parser.add_argument(
 		'-sys',
