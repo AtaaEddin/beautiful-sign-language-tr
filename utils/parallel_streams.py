@@ -32,8 +32,9 @@ def nn_work(model_type,models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum
 	if dd['lstm'] is None and only_lstm:
 		dd['lstm'] = 1
 
-	#if model_type == 'rgb':
-	#	time.sleep(3)
+	if model_type == 'rgb':
+		time.sleep(2)
+	
 	print(f"process {model_type} waiting for data")
 
 	while True:

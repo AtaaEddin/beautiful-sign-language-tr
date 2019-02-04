@@ -3,9 +3,9 @@ import os
 import glob
 import time 
 import sys
-print(f"the pwd: {os.getcwd()}")
+
 from multiprocessing import Process
-sys.path.insert(0,'./app/utils')
+sys.path.insert(0,'./utils')
 
 from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
 
@@ -71,7 +71,7 @@ if __name__ == '__main__' :
 		'--run',
 		dest='run_method',
 		type=str,
-		default='REST_API',
+		default='webcam',
 		help='choose a way to test the sign language system.')
 	parser.add_argument(
 		'-sys',
