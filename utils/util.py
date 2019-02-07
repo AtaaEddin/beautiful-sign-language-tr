@@ -83,6 +83,9 @@ def handler(vid_dir,
 	rgbs = None
 	oflows = None
 	frame_num = None
+	data_preprocessing = 0
+	total_time = 0
+	streams_time = 0
 	if not from_worker:
 
 		for k,_ in res_dict.items():
@@ -107,7 +110,7 @@ def handler(vid_dir,
 		#for p in _2stream:
 		#	p.join()
 		predictions_time = time.time()
-		
+
 		while True:
 			time.sleep(0.1)
 			if len(res_dict['rgb']) > 0 and len(res_dict['oflow']) > 0 :
