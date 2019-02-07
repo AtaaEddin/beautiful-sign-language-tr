@@ -2,7 +2,7 @@ from flask import Flask,request,url_for,render_template
 from werkzeug.utils import secure_filename
 
 try:
-	from util import handler
+	from util import handler,json_to_kiwi
 except ImportError:
 	print("you should run server from the 'main.py' in home directory.")
 
@@ -54,7 +54,8 @@ def predict():
 		save_dir = str(TMP_DIR+secure_filename(f.filename))
 		f.save(save_dir)
 		results = request_handler.handle(save_dir)
-		return str(results)
+		json_result = json_to_kiwi(results,True,"File processed successfully",0)
+		return json_result
 	else:
 		return "you should do POST request"
 
