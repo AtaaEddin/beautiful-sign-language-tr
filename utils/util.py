@@ -84,7 +84,7 @@ def handler(vid_dir,
 	oflows = None
 	frame_num = None
 	data_preprocessing = 0
-	total_time = 0
+
 	streams_time = 0
 	if not from_worker:
 
@@ -107,18 +107,13 @@ def handler(vid_dir,
 		data['frame_num'] = frame_num
 		print("finished filling.")
 
-		#for p in _2stream:
-		#	p.join()
-		predictions_time = time.time()
-
 		while True:
 			time.sleep(0.1)
 			if len(res_dict['rgb']) > 0 and len(res_dict['oflow']) > 0 :
 				break
 			elif len(res_dict['lstm']) > 0:
 				break 
-		streams_time = round(time.time()-predictions_time,2)
-		total_time = streams_time + data_preprocessing
+
 		print("some results returned from processes.")
 
 		if len(res_dict['lstm']) > 0:
@@ -146,10 +141,8 @@ def handler(vid_dir,
 		raise ValueError("ERROR : unkown pred_type flag.")
 	streams_time = round(time.time()-predictions_time,2)
 	print(f"prediction took {streams_time} sec")
-
-	total_time = data_preprocessing + streams_time
-	
-	return predictions,total_time
+		
+	return predictions
 
 def load_model_without_topLayer(model_path, last_desire_layer="global_avg_pool"):
 
