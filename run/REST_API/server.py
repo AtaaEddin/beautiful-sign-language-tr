@@ -1,4 +1,4 @@
-from flask import Flask,request,url_for,render_template
+from flask import Flask,request,url_for,render_template,jsonify
 from werkzeug.utils import secure_filename
 
 try:
@@ -55,7 +55,11 @@ def predict():
 		f.save(save_dir)
 		results = request_handler.handle(save_dir)
 		json_result = json_to_kiwi(results,True,"File processed successfully",0)
-		return json_result
+		return app.response_class(
+                        response=json_result,
+                        status=200,
+                        content_type='application/json; charset=utf-8',
+                        mimetype='application/json')
 	else:
 		return "you should do POST request"
 

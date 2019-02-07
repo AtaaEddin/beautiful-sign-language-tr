@@ -224,13 +224,13 @@ def json_to_kiwi(handler_dict,success_flag,message,processing_time):
 	kiwi["processingTime"] = processing_time
 
 	kiwi["result"] = []
-	for d in handler_dict():
+	for d in handler_dict:
 		for word,prec in d.items():
 			kiwi["result"].append({"word":word,"precentage":prec})
 
 	import json
 
-	j = json.dumps(kiwi,indent=4)
+	j = json.dumps(kiwi,ensure_ascii=False)
 
 	return j
 
