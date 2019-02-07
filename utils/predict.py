@@ -73,12 +73,10 @@ def get_predicts(rgbFrames, oflowFrames, labels, oflow_model, rgb_model, nTop, f
     if from_worker:
             #if len(oflowFrames) > 0 and oflowFrames is not None:
             if rgb_model:
-                print(rgb_arProbas.shape) 
                 res_dict['rgb'] = rgb_arProbas
                 data['lstm'][0] = rgb_arProbas
             #if len(rgbFrames) > 0 and rgbFrames is not None:
             if oflow_model:
-                print(oflow_arProbas.shape) 
                 res_dict['oflow'] = oflow_arProbas
                 data['lstm'][1] = oflow_arProbas
             """    
@@ -91,7 +89,7 @@ def get_predicts(rgbFrames, oflowFrames, labels, oflow_model, rgb_model, nTop, f
                 rgb_arProbas = ret_dict['rgb']
             """
     if oflow_model is not None and rgb_model is not None :
-        results = concate(oflow_arProbas,rgb_arProbas)
+        results = concate(oflow_arProbas,rgb_arProbas,labels,nTop)
         """
         arProbas = np.concatenate((oflow_arProbas,rgb_arProbas), axis=0)
         arProbas = np.mean(arProbas, axis=0)

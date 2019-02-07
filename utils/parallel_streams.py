@@ -38,7 +38,7 @@ def nn_work(model_type,models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum
 	print(f"process {model_type} waiting for data")
 
 	while True:
-		
+		time.sleep(0.1)
 		if len(data[model_type]) == 0:
 			continue
 

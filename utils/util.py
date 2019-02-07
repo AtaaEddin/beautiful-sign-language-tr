@@ -93,7 +93,8 @@ def handler(vid_dir,
 		print("Preprocessing data")
 		preprocessing_time = time.time()
 		rgbs,oflows,frame_num = vid2frames(vid,oflow_model is not None,pred_type,mul_oflow,oflow_pnum)
-		print(f"preprocessing data took {round(time.time()-preprocessing_time,2)} sec") 
+		data_preprocessing = round(time.time()-preprocessing_time,2)
+		print(f"preprocessing data took {data_preprocessing} sec")
 
 	if mul_2stream:
 		
@@ -105,13 +106,16 @@ def handler(vid_dir,
 
 		#for p in _2stream:
 		#	p.join()
-
+		predictions_time = time.time()
+		
 		while True:
+			time.sleep(0.1)
 			if len(res_dict['rgb']) > 0 and len(res_dict['oflow']) > 0 :
 				break
 			elif len(res_dict['lstm']) > 0:
 				break 
-
+		streams_time = round(time.time()-predictions_time,2)
+		total_time = streams_time + data_preprocessing
 		print("some results returned from processes.")
 
 		if len(res_dict['lstm']) > 0:
@@ -137,10 +141,12 @@ def handler(vid_dir,
 	
 	else:
 		raise ValueError("ERROR : unkown pred_type flag.")
-	print(f"prediction took {round(time.time()-predictions_time,2)} sec")
+	streams_time = round(time.time()-predictions_time,2)
+	print(f"prediction took {streams_time} sec")
 
-	return predictions
+	total_time = data_preprocessing + streams_time
 	
+	return predictions,total_time
 
 def load_model_without_topLayer(model_path, last_desire_layer="global_avg_pool"):
 
@@ -213,6 +219,18 @@ def concate(oflow_arProbas,rgb_arProbas,labels,nTop):
 		results.append({labels[index[i]] : round(arTopProbas[i]*100.,2)})
 
 	return results
+
+
+def json_to_kiwi(handler_dict,success_flag,message,processing_time):
+	kiwi = {}
+	kiwi["success"] = success_flag
+	kiwi["message"] = message
+	kiwi["processingTime"] = processing_time
+
+	kiwi["result"] = []
+	for word,prec in enumerate(handler_dict.item()):
+		kiwi["result"].append({"word":word,"precentage":prec})
+
 
 """
 def dropped_cudnn_model(model):
