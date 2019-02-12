@@ -117,11 +117,23 @@ def handler(vid_dir,
 		print("some results returned from processes.")
 
 		if len(res_dict['lstm']) > 0:
-			return res_dict['lstm']
+			#TODO add process time to lstm
+			return res_dict['lstm'],None
 		else:
 			rgb_arProbas = res_dict['rgb']
 			oflow_arProbas = res_dict['oflow']
-			return concate(rgb_arProbas,oflow_arProbas,labels,nTop)
+			
+			while len(res_dict['rgb_time']) == 0 and len(res_dict['oflow_time']) == 0:
+				time.sleep(0.1)
+			p_time = 0
+			if len(res_dict['rgb_time']) != 0:
+				p_time = res_dict['rgb_time'][0]
+			else:
+				p_time = res_dict['oflow_time'][0]
+			
+			total_time = data_preprocessing + float(p_time)
+			
+			return concate(rgb_arProbas,oflow_arProbas,labels,nTop),round(total_time,2)
 
 	from predict import get_predicts,i3d_LSTM_prediction,sent_preds
 	print("running a prediction process ...")
@@ -136,13 +148,12 @@ def handler(vid_dir,
 	elif pred_type == "sentence":
 		sent_preds(rgbs,oflows,frame_num if not from_worker else data['frame_num'],labels,lstmModel,rgb_model,oflow_model,
 					nTop,frames_to_process=30,stride=10,threshold=40)
-	
 	else:
 		raise ValueError("ERROR : unkown pred_type flag.")
 	streams_time = round(time.time()-predictions_time,2)
 	print(f"prediction took {streams_time} sec")
-		
-	return predictions
+
+	return predictions,round(streams_time+data_preprocessing,2)
 
 def load_model_without_topLayer(model_path, last_desire_layer="global_avg_pool"):
 

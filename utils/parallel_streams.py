@@ -1,4 +1,4 @@
-from globalVariables import data,LABELS_SWORD_COL
+from globalVariables import data,LABELS_SWORD_COL,res_dict
 
 def nn_work(model_type,models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum):
 	import time
@@ -43,7 +43,7 @@ def nn_work(model_type,models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum
 			continue
 
 		print(f"{model_type} handling now ...")
-		results = handler(None,
+		results,process_time = handler(None,
 						dd['lstm'],
 						dd['rgb'],
 						dd['oflow'],
@@ -54,5 +54,6 @@ def nn_work(model_type,models_dir,labels_dir,pred_type,nTop,mul_oflow,oflow_pnum
 						oflow_pnum,
 						False,
 						from_worker=True)
-		
+		res_dict[model_type+'_time'] = [process_time]
+
 		data[model_type] = []

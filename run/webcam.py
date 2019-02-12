@@ -43,10 +43,12 @@ def test(models, labels, pred_type, nTop, mul_oflow, oflow_pnum, mul_2stream):
 	video_dir = record_video()
 	#print(video_dir)
 	from utils.util import handler
-	predictions = handler(video_dir,lstmModel,rgb_model,oflow_model,
+	predictions,total_time = handler(video_dir,lstmModel,rgb_model,oflow_model,
 						labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream)
 
 	print(predictions)
+	print(total_time)
+	
 
 def imports():
 	pass

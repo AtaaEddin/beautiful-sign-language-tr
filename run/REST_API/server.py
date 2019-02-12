@@ -27,7 +27,7 @@ class request_handler(object):
 	@classmethod
 	def handle(cls, vid_dir):
 
-		reuslts = handler(vid_dir,
+		reuslts,process_time = handler(vid_dir,
 							cls.models['lstm'],
 							cls.models['rgb'],
 							cls.models['oflow'],
@@ -38,7 +38,7 @@ class request_handler(object):
 							cls.oflow_pnum,
 							cls.mul_2stream)
 
-		return reuslts
+		return reuslts,process_time
 
 
 		
@@ -53,13 +53,13 @@ def predict():
 		f = request.files["file"]
 		save_dir = str(TMP_DIR+secure_filename(f.filename))
 		f.save(save_dir)
-		results = request_handler.handle(save_dir)
-		json_result = json_to_kiwi(results,True,"File processed successfully",0)
+		results,process_time = request_handler.handle(save_dir)
+		json_result = json_to_kiwi(results,True,"File processed successfully",process_time)
 		return app.response_class(
-                        response=json_result,
-                        status=200,
-                        content_type='application/json; charset=utf-8',
-                        mimetype='application/json')
+						response=json_result,
+						status=200,
+						content_type='application/json; charset=utf-8',
+						mimetype='application/json')
 	else:
 		return "you should do POST request"
 
