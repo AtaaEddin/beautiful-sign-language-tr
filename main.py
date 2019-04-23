@@ -4,9 +4,16 @@ import glob
 import time 
 import sys
 
+<<<<<<< HEAD
 sys.path.insert(0,'./utils')
 from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
 
+=======
+from multiprocessing import Process
+sys.path.insert(0,'./utils')
+
+from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
 CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
@@ -61,7 +68,11 @@ def print_sys_info(args):
 		print(' '*3,f'{arg} = {getattr(args,arg)}')
 
 if __name__ == '__main__' :
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	parser = argparse.ArgumentParser()
 
 	# --run 
@@ -115,14 +126,22 @@ if __name__ == '__main__' :
 		'--oflow_only',
 		dest='use_oflow',
 		type=bool,
+<<<<<<< HEAD
 		default=True,
+=======
+		default=False,
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		help='just use optical flow stream.')
 	parser.add_argument(
 		'-on_cpu',
 		'--use_cpu',
 		dest='on_cpu',
 		type=bool,
+<<<<<<< HEAD
 		default=False,
+=======
+		default=True,
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		help='run the system on cpu.')
 	parser.add_argument(
 		'-pred_type',
@@ -143,28 +162,44 @@ if __name__ == '__main__' :
 		'--download',
 		dest='download',
 		type=bool,
+<<<<<<< HEAD
 		default=True,
+=======
+		default=False,
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		help='download weights and classes to checkpoints directory.')
 	parser.add_argument(
 		'-mul_oflow',
 		'--multiprocessing_opticalflow',
 		dest='mul_oflow',
 		type=bool,
+<<<<<<< HEAD
 		default=False,
+=======
+		default=True,
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		help="faster optical flow calculation with multiprocessing.")
 	parser.add_argument(
 		'-oflow_pnum',
 		'--oflow_process_num',
 		dest='oflow_pnum',
 		type=int,
+<<<<<<< HEAD
 		default=4,
+=======
+		default=2,
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		help="number of processes to calculate optical flow.")
 	parser.add_argument(
 		'-mul_2stream',
 		'--multiprocessing_two_stream',
 		dest='mul_2stream',
 		type=bool,
+<<<<<<< HEAD
 		default=False,
+=======
+		default=True,
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		help='run two stream on different processes.')
 	# CPU OR GPU
 	# HOW MUCH FRACTION ON GPU DO YOU WANT TO USE 
@@ -237,9 +272,12 @@ if __name__ == '__main__' :
 
 	models = defaultdict(lambda : None)
 	from utils.util import load_models,csv_to_dict
+<<<<<<< HEAD
 	from multiprocessing import Manager
 
 	from multiprocessing import Process
+=======
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	labels = csv_to_dict(labels_dir,LABELS_SWORD_COL)
 		
 	if not mul_2stream:
@@ -274,8 +312,12 @@ if __name__ == '__main__' :
 
 		print(f"{len(_2stream)} process has been initialized.")
 
+<<<<<<< HEAD
     
 	
+=======
+
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	# run some server with flags cpu gpu pred_type nTop
 	# if wamp
 	if run_method == "wamp":

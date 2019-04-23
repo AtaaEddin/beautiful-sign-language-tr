@@ -24,7 +24,11 @@ class OpticalFlow:
     Detects first call automatically.
     """ 
 
+<<<<<<< HEAD
     def __init__(self, sAlgorithm:str = "farnback", bThirdChannel:bool = False, fBound:float = 20.):
+=======
+    def __init__(self, sAlgorithm:str = "tvl1-fast", bThirdChannel:bool = False, fBound:float = 20.):
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
         self.bThirdChannel = bThirdChannel
         self.fBound = fBound
@@ -83,14 +87,22 @@ class OpticalFlow:
         # get image in black&white
         arCurrent = np.array(cv2.cvtColor(arImage, cv2.COLOR_BGR2GRAY))
 
+<<<<<<< HEAD
         #print("before")
+=======
+        print("before")
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
         if self.sAlgorithm == "tvl1":
             arFlow = self.oTVL1.calc(self.arPrev, arCurrent, None)
         elif self.sAlgorithm == "farnback":
             arFlow = cv2.calcOpticalFlowFarneback(self.arPrev, arCurrent, flow=None, 
                 pyr_scale=0.5, levels=1, winsize=15, iterations=2, poly_n=5, poly_sigma=1.1, flags=0)
         else: raise ValueError("Unknown optical flow type")
+<<<<<<< HEAD
         #print("after")
+=======
+        print("after")
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
         # only 2 dims
         arFlow = arFlow[:, :, 0:2]
@@ -110,7 +122,11 @@ class OpticalFlow:
 
 
 
+<<<<<<< HEAD
 def frames2flows(arFrames:np.array(int), sAlgorithm = "farnback", bThirdChannel:bool = False, bShow = False, fBound:float = 20.) -> np.array(float):
+=======
+def frames2flows(arFrames:np.array(int), sAlgorithm = "tvl1-fast", bThirdChannel:bool = False, bShow = False, fBound:float = 20.) -> np.array(float):
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
     """ Calculates optical flow from frames
 
     Returns:
@@ -121,7 +137,11 @@ def frames2flows(arFrames:np.array(int), sAlgorithm = "farnback", bThirdChannel:
 
     # initialize optical flow calculation
     oOpticalFlow = OpticalFlow(sAlgorithm = sAlgorithm, bThirdChannel = bThirdChannel, fBound = fBound)
+<<<<<<< HEAD
     arFrames = np.array(arFrames)
+=======
+    
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
     liFlows = []
     # loop through all frames
     for i in range(len(arFrames)):

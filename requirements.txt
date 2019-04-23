@@ -1,18 +1,29 @@
 Click == 7.0
+<<<<<<< HEAD
+=======
+Keras == 2.2.4
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 Pillow == 5.4.1
 numpy
 pandas == 0.23.4
 requests == 2.18.4
 scikit_learn == 0.20.2
+<<<<<<< HEAD
+=======
+tensorflow == 1.12.0
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 win_unicode_console == 0.5
 tqdm
 flask
 opencv-python
 opencv_python
 werkzeug
+<<<<<<< HEAD
 filetype
 keras
 tensorflow-gpu==1.11.0
+=======
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
 
 

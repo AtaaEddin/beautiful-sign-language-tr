@@ -206,8 +206,12 @@ def make_lookuptable(classes, save_to="turkish_classes.csv"):
 	sclasses.to_csv(save_to)
 
 def main():
+<<<<<<< HEAD
 	pass
 	#make_lookuptable()
+=======
+	make_lookuptable()
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	#mv_vidoes("train")
 	#right_labeling()
 	#show_video()
@@ -216,11 +220,16 @@ def main():
 	#add_to_csv("train", "./new_hilal.txt")
 
 if __name__ == "__main__":
+<<<<<<< HEAD
 	
 	#make labels path 
 	classes = [[10, "iyi"],[34, "ev"],[43, "gel"],[45, "Merhaba"],[47, "iyi akşamlar"],[48, "teşekkür edirim"],[49, "nasılsın"],[64, "evet"],[65, "hayır"],[81, "yemek"]]
 	make_lookuptable(classes)
 	exit(0)
+=======
+	#make labels path 
+	classes = [[10, "güzel - iyi"],[34, "ev"],[43, "gel"],[45, "Merhaba"],[47, "iyi akşamlar"],[48, "teşekkür etmek"],[49, "nasılsın"],[64, "evet"],[65, "hayır"],[81, "yemek"]]
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	classes_dir = "turkish_x_word.csv"
 
 	#main path

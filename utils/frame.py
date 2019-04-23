@@ -127,6 +127,7 @@ def image_crop(arFrame, nHeightTarget, nWidthTarget) -> np.array:
 
     return arFrame
 
+<<<<<<< HEAD
 def images_rescale(arFrames:np.array) -> np.array(float):
     """ Rescale array of images (rgb 0-255) to [-1.0, 1.0]
     """
@@ -136,6 +137,8 @@ def images_rescale(arFrames:np.array) -> np.array(float):
 
     return ar_fFrames
 
+=======
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
 def images_crop(arFrames:np.array, nHeightTarget, nWidthTarget) -> np.array:
     """ crop each frame in array to specified size, choose centered image
@@ -153,6 +156,20 @@ def images_crop(arFrames:np.array, nHeightTarget, nWidthTarget) -> np.array:
 
     return arFrames
 
+<<<<<<< HEAD
+=======
+
+def images_rescale(arFrames:np.array) -> np.array(float):
+    """ Rescale array of images (rgb 0-255) to [-1.0, 1.0]
+    """
+
+    ar_fFrames = arFrames / 127.5
+    ar_fFrames -= 1.
+
+    return ar_fFrames
+
+
+>>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 def images_normalize(arFrames:np.array, nFrames:int, nHeight:int, nWidth:int, bRescale:bool = True) -> np.array(float):
     """ Several image normalizations/preprocessing: 
         - downsample number of frames
