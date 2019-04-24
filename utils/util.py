@@ -57,10 +57,6 @@ def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
 			else:
 				oflowFrames = frames2flows(rgbFrames)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	rgbFrames = images_rescale(rgbFrames)
 
 	return rgbFrames, oflowFrames, frame_num
@@ -145,11 +141,7 @@ def handler(vid_dir,
 	oflows = oflows if not from_worker else data['oflow']
 	if pred_type == "word":
 		if not lstmModel is None:
-<<<<<<< HEAD
 			predictions = i3d_LSTM_prediction(rgbs,oflows,labels,lstmModel,rgb_model,oflow_model,nTop,mul_2stream,from_worker)
-=======
-			predictions = i3d_LSTM_prediction(rgbs,oflows,labels,lstmModel,rgb_model,oflow_model,nTop,from_worker)
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		else:
 			predictions = get_predicts(rgbs,oflows,labels,oflow_model,rgb_model,nTop,from_worker)
 	elif pred_type == "sentence":
@@ -220,12 +212,8 @@ def load_models(models_dir,
 	return models
 
 def csv_to_dict(labels_dir,sWord_col):
-<<<<<<< HEAD
 	df = pd.read_csv(labels_dir,encoding = 'utf8')
 	#df.apply(lambda x: pd.lib.infer_dtype(x.values))
-=======
-	df = pd.read_csv(labels_dir)
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 	return dict(enumerate(df[sWord_col].tolist()))
 
 def concate(oflow_arProbas,rgb_arProbas,labels,nTop):
@@ -247,16 +235,10 @@ def json_to_kiwi(handler_dict,success_flag,message,processing_time):
 	kiwi["processingTime"] = processing_time
 
 	kiwi["result"] = []
-<<<<<<< HEAD
 	if handler_dict is not None:
 		for d in handler_dict:
 			for word,prec in d.items():
 				kiwi["result"].append({"word":word,"precentage":prec})
-=======
-	for d in handler_dict:
-		for word,prec in d.items():
-			kiwi["result"].append({"word":word,"precentage":prec})
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
 	import json
 
@@ -264,15 +246,12 @@ def json_to_kiwi(handler_dict,success_flag,message,processing_time):
 
 	return j
 
-<<<<<<< HEAD
 def IsCorrupted(video_dir):
 	vid = cv2.VideoCapture(video_dir)
 	if not vid.isOpened():
 		return True
 	return False
-=======
 
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 """
 def dropped_cudnn_model(model):
 	# not working properly 

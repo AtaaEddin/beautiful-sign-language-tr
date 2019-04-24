@@ -1,6 +1,5 @@
 from flask import Flask,request,url_for,render_template,jsonify
 from werkzeug.utils import secure_filename
-<<<<<<< HEAD
 from filetype.match import video
 import filetype
 import os
@@ -11,11 +10,6 @@ import os
 
 try:
 	from util import handler,json_to_kiwi,IsCorrupted
-=======
-
-try:
-	from util import handler,json_to_kiwi
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 except ImportError:
 	print("you should run server from the 'main.py' in home directory.")
 
@@ -62,7 +56,6 @@ def index():
 
 @app.route("/predict",methods=['GET','POST'])
 def predict():
-<<<<<<< HEAD
 	results = None
 	message = ""
 	process_time = 0
@@ -99,14 +92,6 @@ def predict():
 				message = f"""server received unexpected file (type: {kind.mime if hasattr(kind,'mime') else 'Unknown'} - extention: {kind.extention if hasattr(kind,'extention') else 'Unknown'}).\nplease send video files with general supported formats 'mp4','webm','avi',...."""
 				
 		json_result = json_to_kiwi(results,success,message,process_time)
-=======
-	if request.method == "POST":
-		f = request.files["file"]
-		save_dir = str(TMP_DIR+secure_filename(f.filename))
-		f.save(save_dir)
-		results,process_time = request_handler.handle(save_dir)
-		json_result = json_to_kiwi(results,True,"File processed successfully",process_time)
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 		return app.response_class(
 						response=json_result,
 						status=200,
@@ -119,11 +104,7 @@ def predict():
 
 def run(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream,host="0.0.0.0"):
 	request_handler.init(models,labels,pred_type,nTop,mul_oflow,oflow_pnum,mul_2stream)
-<<<<<<< HEAD
 	app.run(host=host,threaded=True)
-=======
-	app.run(host=host)
->>>>>>> c4bd54b146f1a134824e6b346b5c39b01a00cb3f
 
 
 if __name__ == '__main__' :
