@@ -9,7 +9,7 @@ import os
 #os.environ['PATH'] = os.path.dirname(os.path.join(os.getcwd(),'run','REST_API','MediaInfo/')) + ';' + os.environ['PATH']
 
 try:
-	from util import handler,json_to_kiwi,IsCorrupted
+	from util import handler,json_to_server,IsCorrupted
 except ImportError:
 	print("you should run server from the 'main.py' in home directory.")
 
@@ -81,7 +81,7 @@ def predict():
 				message = "File processed successfully"
 				success = True
 			except:
-				message = "Entrenal Error occured while trying to process the file. \nplease contact with @kiwi-team at http://kiwi.wiki.com.tr/support."
+				message = "Entrenal Error occured while trying to process the file. \nplease open an issuse at https://github.com/AtaaEddin/beautiful-sign-language-tr"
 				success = False
 			
 		else:
@@ -91,7 +91,7 @@ def predict():
 			else:
 				message = f"""server received unexpected file (type: {kind.mime if hasattr(kind,'mime') else 'Unknown'} - extention: {kind.extention if hasattr(kind,'extention') else 'Unknown'}).\nplease send video files with general supported formats 'mp4','webm','avi',...."""
 				
-		json_result = json_to_kiwi(results,success,message,process_time)
+		json_result = json_to_server(results,success,message,process_time)
 		return app.response_class(
 						response=json_result,
 						status=200,

@@ -79,7 +79,6 @@ def get_vid_dirs(url):
 	except Exception as e:
 		print(e,"\nEither no data or worng formated data received.")
 
-
 	if resp["message"] == "Data Yok":
 		return None
 	else:
@@ -149,7 +148,7 @@ def run_server(php_webservice,
 			if not os.path.exists(wamp_folder + vid_path):
 				raise ValueError("[ERROR]: Incorrect pathing to the videos - (check videos dirctories).")
 			
-			predictions = handler(wamp_folder + vid_path, lstmModel, 
+			predictions,_ = handler(wamp_folder + vid_path, lstmModel, 
 								rgb_model, oflow_model, labels, pred_type, nTop,mul_oflow,oflow_pnum,mul_2stream)
 
 			if not id_and_prediction_q.full() and vid_id in processed_vid:

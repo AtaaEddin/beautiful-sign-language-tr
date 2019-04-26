@@ -228,21 +228,21 @@ def concate(oflow_arProbas,rgb_arProbas,labels,nTop):
 	return results
 
 
-def json_to_kiwi(handler_dict,success_flag,message,processing_time):
-	kiwi = {}
-	kiwi["success"] = success_flag
-	kiwi["message"] = message
-	kiwi["processingTime"] = processing_time
+def json_to_server(handler_dict,success_flag,message,processing_time):
+	server = {}
+	server["success"] = success_flag
+	server["message"] = message
+	server["processingTime"] = processing_time
 
-	kiwi["result"] = []
+	server["result"] = []
 	if handler_dict is not None:
 		for d in handler_dict:
 			for word,prec in d.items():
-				kiwi["result"].append({"word":word,"precentage":prec})
+				server["result"].append({"word":word,"precentage":prec})
 
 	import json
 
-	j = json.dumps(kiwi,ensure_ascii=False)
+	j = json.dumps(server,ensure_ascii=False)
 
 	return j
 

@@ -12,6 +12,10 @@ CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
 LABELS = "classes"
 
+# settings for WampServer 
+php_webservice = "http://localhost/combine/webservices.php"
+wamp_folder = '/opt/lampp/htdocs/combine/'
+
 def get_sys_info(sys_name):
 	
 	rgb_dir = None
@@ -79,23 +83,6 @@ if __name__ == '__main__' :
 		type=str,
 		default='turkish_10_word',
 		help='choose which sign language system to run.')
-	# to run on wamp arguments
-	################
-	parser.add_argument(
-		'-php_webservice',
-		'--wamp_webservice',
-		dest='php_webservice',
-		type=str,
-		default='http://localhost/combine/webservices.php',
-		help='path to the php file for web service.')
-	parser.add_argument(
-		'-wamp_folder',
-		'--wamp_project',
-		dest='wamp_folder',
-		type=str,
-		default='/opt/lampp/htdocs/combine/',
-		help='path to the wamp project.')
-	################
 	parser.add_argument(
 		'-use_lstm',
 		'--use_lstm',
@@ -281,8 +268,6 @@ if __name__ == '__main__' :
 		print("running wamp server.")
 		from run.wamp import run_server 
 
-		php_webservice = args.php_webservice
-		wamp_folder = args.wamp_folder
 		if not os.path.exists(wamp_folder):
 			raise ValueError(f"ERROR : can't find wamp service in {wamp_folder} directory")
 

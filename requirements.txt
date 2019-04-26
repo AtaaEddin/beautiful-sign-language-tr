@@ -13,7 +13,7 @@ opencv_python
 werkzeug
 filetype
 keras
-tensorflow-gpu==1.11.0
+tensorflow-gpu == 1.11.0
 
 
 
