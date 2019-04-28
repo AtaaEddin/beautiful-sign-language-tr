@@ -4,18 +4,13 @@ import glob
 import time 
 import sys
 
-
 sys.path.insert(0,'./utils')
 from globalVariables import ret_dict,data,res_dict,LABELS_SWORD_COL,_2stream
+
 
 CHEKPOINT = "./checkpoints"
 WEIGHTS = "weights"
 LABELS = "classes"
-
-# settings for WampServer 
-php_webservice = "http://localhost/combine/webservices.php"
-wamp_folder = 'C:/wamp64/www/combine/'
-
 
 def get_sys_info(sys_name):
 	
@@ -66,7 +61,6 @@ def print_sys_info(args):
 		print(' '*3,f'{arg} = {getattr(args,arg)}')
 
 if __name__ == '__main__' :
-
 	parser = argparse.ArgumentParser()
 
 	# --run 
@@ -84,6 +78,23 @@ if __name__ == '__main__' :
 		type=str,
 		default='turkish_10_word',
 		help='choose which sign language system to run.')
+	# to run on wamp arguments
+	################
+	parser.add_argument(
+		'-php_webservice',
+		'--wamp_webservice',
+		dest='php_webservice',
+		type=str,
+		default='http://localhost/combine/webservices.php',
+		help='path to the php file for web service.')
+	parser.add_argument(
+		'-wamp_folder',
+		'--wamp_project',
+		dest='wamp_folder',
+		type=str,
+		default='/opt/lampp/htdocs/combine/',
+		help='path to the wamp project.')
+	################
 	parser.add_argument(
 		'-use_lstm',
 		'--use_lstm',
@@ -96,33 +107,21 @@ if __name__ == '__main__' :
 		'--rgb_only',
 		dest='use_rgb',
 		type=bool,
-<<<<<<< HEAD
-		default=True,
-=======
 		default=False,
->>>>>>> a9b89ea451671376e92d194619be32c93211d6a1
 		help='just use rgb stream.')
 	parser.add_argument(
 		'-oflow',
 		'--oflow_only',
 		dest='use_oflow',
 		type=bool,
-<<<<<<< HEAD
 		default=False,
-=======
-		default=True,
->>>>>>> a9b89ea451671376e92d194619be32c93211d6a1
 		help='just use optical flow stream.')
 	parser.add_argument(
 		'-on_cpu',
 		'--use_cpu',
 		dest='on_cpu',
 		type=bool,
-<<<<<<< HEAD
 		default=False,
-=======
-		default=True,
->>>>>>> a9b89ea451671376e92d194619be32c93211d6a1
 		help='run the system on cpu.')
 	parser.add_argument(
 		'-pred_type',
@@ -236,11 +235,10 @@ if __name__ == '__main__' :
 	from collections import defaultdict
 
 	models = defaultdict(lambda : None)
-
 	from utils.util import load_models,csv_to_dict
 	from multiprocessing import Manager
-	from multiprocessing import Process
 
+	from multiprocessing import Process
 	labels = csv_to_dict(labels_dir,LABELS_SWORD_COL)
 		
 	if not mul_2stream:
@@ -275,12 +273,16 @@ if __name__ == '__main__' :
 
 		print(f"{len(_2stream)} process has been initialized.")
 
+    
+	
 	# run some server with flags cpu gpu pred_type nTop
 	# if wamp
 	if run_method == "wamp":
 		print("running wamp server.")
 		from run.wamp import run_server 
 
+		php_webservice = args.php_webservice
+		wamp_folder = args.wamp_folder
 		if not os.path.exists(wamp_folder):
 			raise ValueError(f"ERROR : can't find wamp service in {wamp_folder} directory")
 

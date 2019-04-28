@@ -123,7 +123,7 @@ def predict(Frames, i3d_model, labels, nTop):
 
 
 def sent_preds(rgbs,oflows,frames_count,labels,lstmModel,rgb_model,oflow_model,
-    nTop,frames_to_process=30,stride=10,threshold=10):
+    nTop,frames_to_process=30,stride=10,threshold=30):
     pos = 0
     results = []
     #print("rgbs.shape:",rgbs.shape)
@@ -185,7 +185,6 @@ def sent_preds(rgbs,oflows,frames_count,labels,lstmModel,rgb_model,oflow_model,
         #print(f"is there from {Next} to {Next+stride}")
     
 
-    print(results)
     def Phase(results):
         new_res = []
         key = [""] * 3

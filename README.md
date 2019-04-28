@@ -6,7 +6,6 @@ this repository has been built to be a start point hoping to continue further in
 <img width="600" src="https://media.giphy.com/media/XoVtquOIFanZEg1cHq/giphy.gif"/> 
 </p>
 
-
 ## Features
 - **Functionality**
 	- **word-base system**
@@ -31,7 +30,6 @@ this repository has been built to be a start point hoping to continue further in
 - **CPU/GPU** 
 	supports cpu and gpu, but to run it on GPU you need to install CUDA(Nivaida GPU) and cuDNN, head to [Tensorflow](https://www.tensorflow.org/install/gpu) website for more information
 - **OS**: Ubuntu(18),Windows(10)
-
 
 ## Results
 
@@ -99,6 +97,7 @@ python main.py -run REST_API -pred_type word
 
 learn more about the flags [Flags.md](https://github.com/AtaaEddin/beautiful-sign-language-tr/blob/master/Flags.md)
 
+
 ## run the system on WampServer
 
 [WampServer]((http://www.wampserver.com/en/)) is a Windows web development environment. So if you are on Ubuntu or linux you have to install [Xampp](https://www.apachefriends.org/tr/index.html).
@@ -133,7 +132,6 @@ pip install tensorflow-gpu == 1.11.0
 ```
 
 Then head to [Tensorflow](https://www.tensorflow.org/install/gpu) website under 'Software requirements' install all the requirements.
-
 
 
 ## Training
