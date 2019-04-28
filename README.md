@@ -1,6 +1,6 @@
 # beautiful sign language (Turkish version) 
 
-this repository has been built to be a start point hoping to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, in this moment our system contains Deep learning model trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP) collected with the help of friends.
+I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP) collected with the help of friends.
 
 <p align="center">
 <img width="600" src="https://media.giphy.com/media/XoVtquOIFanZEg1cHq/giphy.gif"/> 
@@ -9,7 +9,7 @@ this repository has been built to be a start point hoping to continue further in
 ## Features
 - **Functionality**
 	- **word-base system**
-		- for one sign language sentence be translated should be fed to the system as **words**, each word considered as independent Input.
+		- for one sign language sentence to be translated, it should be fed to the system as **words**, each word considered as independent Input.
 		- accurate, simple and fast
 		- Input space is discrete, means each video(input) is a word. 
 	- **sentence-base system**
@@ -104,7 +104,7 @@ learn more about the flags [Flags.md](https://github.com/AtaaEddin/beautiful-sig
 
 - **On Windows** 
 	- install wamp from [WampServer](http://www.wampserver.com/en/) site and download the version that suits your OS.
-	- download necessary files from [here](https://drive.google.com/file/d/12a2i-jLCLGlHXKTFR2jd1PZFJv1DOpiW/view?usp=sharing) the folder named 'combine'. after that move the folder to 'path/to/wampdir/www/'
+	- download necessary files from [here](https://drive.google.com/file/d/1cxh3V8PuojljbRpxzPflNH7EsYcgNGbe/view?usp=sharing) the folder named 'combine'. after that move the folder to 'path/to/wampdir/www/'
 	- After you run WampServer, you should be able to go to  http://127.0.0.1/combine/. 
 	- Go to http://127.0.0.1/phpmyadmin/. In the left there are Database icons press on 'New', name the database 'isaret' and from the drop-down menu select 'utf8_general_ci' then press create.
 	- In the main.py change 'wamp_folder' to your path directory where you put combine folder.
@@ -113,7 +113,7 @@ learn more about the flags [Flags.md](https://github.com/AtaaEddin/beautiful-sig
 
 - **On Ubuntu**
 	- install [Xampp](https://www.apachefriends.org/tr/index.html).
-	- download necessary files from [here](https://drive.google.com/file/d/12a2i-jLCLGlHXKTFR2jd1PZFJv1DOpiW/view?usp=sharing) the folder named 'combine'. after that move the folder to /opt/lampp/htdocs/
+	- download necessary files from [here](https://drive.google.com/file/d/1cxh3V8PuojljbRpxzPflNH7EsYcgNGbe/view?usp=sharing) the folder named 'combine'. after that move the folder to /opt/lampp/htdocs/
 	- you can run Xampp with `$ sudo opt/lampp/lampp start` if you faced any troubles try to run Xampp through the XAMPP-Launcher, after you run it you should be able to go to  http://127.0.0.1/combine/ 
 	- Go to http://127.0.0.1/phpmyadmin/. In the left there are Database icons press on 'New', name the database 'isaret' and from the drop-down menu select 'utf8_general_ci' then press create.
 	-  run `$ sudo find /opt/lampp/htdocs -type d -exec chmod 755 {} \;` to allow read and write to somefolder like 'uploads'.
