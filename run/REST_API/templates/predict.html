@@ -1,0 +1,21 @@
+<h1> SIGN LANGUAGE SYSTEM </h1>
+</br><h2> TESTING REST API SERVER </h2
+
+</br>
+</br>
+<form enctype="multipart/form-data"
+        action="/predict"
+        method="POST">
+   <input type="HIDDEN" name="dest-exists-action" value="overwrite"/>
+   <input type="HIDDEN" name="type" value="text"/>
+   <input type="HIDDEN" name="jobname" value="TEST"/>
+   <input type="HIDDEN" name="priority" value="1"/>
+   <input type="HIDDEN" name="checksum" value="NONE"/>
+   <input type="HIDDEN" name="metadata" value="fred=awesome,bob=cool"/>
+   <input type="HIDDEN" name="metadata" value="lewis=fast,niall=slow"/>
+   <input type="HIDDEN" name="postdest" 
+          value="[command=D:\postdest.cmd,type=executable,successrc=0]"/>
+   <input type="HIDDEN" name="postdest-args" value="[fred]"/>
+   File: <input type="FILE" name="file"/>
+   <input type="submit" name="Upload" value="Upload" />
+  </form>
