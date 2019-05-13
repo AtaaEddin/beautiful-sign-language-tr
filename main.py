@@ -59,6 +59,7 @@ def get_sys_info(sys_name):
 
 	return h5_dirs,sys_labels[0]	
 
+def print_sys_info(args):
 
 	print("running the system with:")
 	for arg in vars(args):
@@ -212,8 +213,8 @@ if __name__ == '__main__' :
 	# print informative messages for what will be used next
 	print_sys_info(args) 
 
-
-	
+	# create tmp dir
+	os.makedirs('./tmp', exist_ok=True)
 
 	if on_cpu:
 		os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152

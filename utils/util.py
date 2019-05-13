@@ -17,11 +17,10 @@ def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
 	# Input : video(Stream), RGB(Boolean), oflow(Boolean)
 
 	# Output : RGB-list, oflow-list
-	rgbFrames,oflowFrames = None,None	
+	rgbFrames,oflowFrames = [],[]	
 	
 	tuRectangle = (224, 224)
 	success, frame = vid.read()
-	rgbFrames = []
 	frame_num = 0
 
 	while success:
@@ -38,7 +37,10 @@ def vid2frames(vid, oflow, pred_type, mul_oflow, oflow_pnum):
 		success, frame = vid.read()
 		
 		frame_num += 1	
-	
+
+	if len(rgbFrames) == 0 :
+		raise ValueError("Could not extract webcam frames successfully.")
+
 	#rgbFrames = image_normalize(np.array(rgbFrames), 40)
 	if len(rgbFrames) < 40:
 		if oflow:

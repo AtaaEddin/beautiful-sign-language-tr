@@ -37,7 +37,6 @@ def record_video():
 			nTop):
 """
 def test(models, labels, pred_type, nTop, mul_oflow, oflow_pnum, mul_2stream):
-	imports()	
 	rgb_model,oflow_model,lstmModel = models["rgb"],models["oflow"],models["lstm"]
 	#video_dir = "./tmp/outpy.avi"
 	video_dir = record_video()
@@ -50,5 +49,3 @@ def test(models, labels, pred_type, nTop, mul_oflow, oflow_pnum, mul_2stream):
 	print(total_time)
 	
 
-def imports():
-	pass
