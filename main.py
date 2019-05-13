@@ -59,7 +59,6 @@ def get_sys_info(sys_name):
 
 	return h5_dirs,sys_labels[0]	
 
-def print_sys_info(args):
 
 	print("running the system with:")
 	for arg in vars(args):
@@ -75,7 +74,7 @@ if __name__ == '__main__' :
 		'--run',
 		dest='run_method',
 		type=str,
-		default='REST_API',
+		default='webcam',
 		help='choose a way to test the sign language system.')
 	parser.add_argument(
 		'-sys',
@@ -96,33 +95,21 @@ if __name__ == '__main__' :
 		'--rgb_only',
 		dest='use_rgb',
 		type=bool,
-<<<<<<< HEAD
 		default=True,
-=======
-		default=False,
->>>>>>> a9b89ea451671376e92d194619be32c93211d6a1
 		help='just use rgb stream.')
 	parser.add_argument(
 		'-oflow',
 		'--oflow_only',
 		dest='use_oflow',
 		type=bool,
-<<<<<<< HEAD
 		default=False,
-=======
-		default=True,
->>>>>>> a9b89ea451671376e92d194619be32c93211d6a1
 		help='just use optical flow stream.')
 	parser.add_argument(
 		'-on_cpu',
 		'--use_cpu',
 		dest='on_cpu',
 		type=bool,
-<<<<<<< HEAD
-		default=False,
-=======
 		default=True,
->>>>>>> a9b89ea451671376e92d194619be32c93211d6a1
 		help='run the system on cpu.')
 	parser.add_argument(
 		'-pred_type',

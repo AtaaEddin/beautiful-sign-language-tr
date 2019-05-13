@@ -69,7 +69,7 @@ clone the repo (or download it as .zip file) and install the requirements.
 ```bash
 git clone https://github.com/AtaaEddin/alpha
 cd alpha
-pip install -r requirements
+pip install -r requirements.txt
 ```
 ## Quick start
 

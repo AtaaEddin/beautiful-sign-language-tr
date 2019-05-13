@@ -1,9 +1,9 @@
 Click == 7.0
 Pillow == 5.4.1
 numpy
-pandas == 0.23.4
-requests == 2.18.4
-scikit_learn == 0.20.2
+pandas 
+requests 
+scikit_learn 
 tensorflow == 1.11.0
 win_unicode_console == 0.5
 tqdm
