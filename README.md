@@ -1,6 +1,6 @@
 # beautiful sign language (Turkish version) 
 
-I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP).
+I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language (words)[https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP].
 
 ## How to contribute? 
 Find a good video dataset for any sign language or make your own dataset(simply by using your phone) then label every video, i suggest to write interface to do so.
@@ -57,13 +57,13 @@ The system can recognize 10 words of turkish sign language [words](https://www.y
 
 ## Installation
 
-**Note:** code will not run with python newer versions 3.7,3.8, you should install lower versions.We recommend installing (python3.6.8)[https://www.python.org/downloads/release/python-368/]
+**Note:** code will not run with python newer versions 3.7,3.8, you should install lower versions.We recommend installing [python3.6.8](https://www.python.org/downloads/release/python-368/)
 
 the system is tested on ubuntu 18.4 and windows 10, but it should work fine for other OS. If you encountered any problem feel free to open an issue.
 
 ### Prerequisites
 
-- (python3.6.8)[https://www.python.org/downloads/release/python-368/]
+- [python3.6.8](https://www.python.org/downloads/release/python-368/)
 - Tensorflow >= 1.11.0
 - Keras >= 2.2.4
 - in addition(**optional**):
