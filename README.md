@@ -1,6 +1,6 @@
 # beautiful sign language (Turkish version) 
 
-I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language (words)[https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP].
+I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP).
 
 ## How to contribute? 
 Find a good video dataset for any sign language or make your own dataset(simply by using your phone) then label every video, i suggest to write interface to do so.
