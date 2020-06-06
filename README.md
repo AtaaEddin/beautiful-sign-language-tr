@@ -3,8 +3,8 @@
 I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP).
 
 ## How to contribute? 
-Find a good video dataset for any sign language or make your own dataset(simply by using your phone) then label every video, i suggest to write interface to do so.
-Then open an issue describing your dataset and the results you obtained from training phase using same models (if any).Then we will make sure to merge all the other datasets with your dataset by merging them and do overall training... Ofcourse i will make sure for all submitted datasets to be available online and to anyone how wants to train using this project's models or any other models.  
+Find a good video dataset for any sign language or make your own dataset(simply by using your phone) then label every video, i suggest to write interface to do so. Another intersting approach is to scrape videos from Apis like youtube Api using query words...
+After collecting dataset open an issue describing your dataset and the results you obtained from training phase using same models (if any).Then we will make sure to merge all the other datasets with your dataset by merging them and do overall training... Ofcourse i will make sure for all submitted datasets to be available online and to anyone how wants to train using this project's models or any other models.  
 
 
 <p align="center">
