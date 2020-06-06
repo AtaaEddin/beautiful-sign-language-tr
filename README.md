@@ -1,6 +1,11 @@
 # beautiful sign language (Turkish version) 
 
-I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP) collected with the help of friends.
+I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP).
+
+## How to contribute? 
+Find a good video dataset for any sign language or make your own dataset(simply by using your phone) then label every video, i suggest to write interface to do so.
+Then open an issue describing your dataset and the results you obtained from training phase using same models (if any).Then we will make sure to merge all the other datasets with your dataset by merging them and do overall training... Ofcourse i will make sure for all submitted datasets to be available online and to anyone how wants to train using this project's models or any other models.  
+
 
 <p align="center">
 <img width="600" src="https://media.giphy.com/media/XoVtquOIFanZEg1cHq/giphy.gif"/> 
@@ -48,28 +53,31 @@ I like to consider this repository as a start point, hoping in future to continu
 
 ## system sign language words
 
-Right now the system can recognize these sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP)
+The system can recognize 10 words of turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP), but the dream is to collect more words with the help of our community to include more words by building large dataset. 
 
 ## Installation
+
+**Note:** code will not run with python newer versions 3.7,3.8, you should install lower versions.We recommend installing (python3.6.8)[https://www.python.org/downloads/release/python-368/]
 
 the system is tested on ubuntu 18.4 and windows 10, but it should work fine for other OS. If you encountered any problem feel free to open an issue.
 
 ### Prerequisites
 
-- python3
+- (python3.6.8)[https://www.python.org/downloads/release/python-368/]
 - Tensorflow >= 1.11.0
 - Keras >= 2.2.4
 - in addition(**optional**):
 	- wamp(windows) or Xampp(linux)
 	- CUDA 8 and cuDNN 7.4
 
-
 clone the repo (or download it as .zip file) and install the requirements.
+
+**Note:** If you are on windows run the below commands as adminstrator, on linux run it with super user (ex: ubuntu -> sudo)
 
 ```bash
 git clone https://github.com/AtaaEddin/alpha
 cd alpha
-pip install -r requirements.txt
+pip install -r requirements.txt 
 ```
 ## Quick start
 
@@ -106,7 +114,7 @@ learn more about the flags [Flags.md](https://github.com/AtaaEddin/beautiful-sig
 	- install wamp from [WampServer](http://www.wampserver.com/en/) site and download the version that suits your OS.
 	- download necessary files from [here](https://drive.google.com/file/d/1cxh3V8PuojljbRpxzPflNH7EsYcgNGbe/view?usp=sharing) the folder named 'combine'. after that move the folder to 'path/to/wampdir/www/'
 	- After you run WampServer, you should be able to go to  http://127.0.0.1/combine/. 
-	- Go to http://127.0.0.1/phpmyadmin/. In the left there are Database icons press on 'New', name the database 'isaret' and from the drop-down menu select 'utf8_general_ci' then press create.
+	- Login to http://127.0.0.1/phpmyadmin/. one the left there are Database icons press on 'New', name the database 'isaret' and from the drop-down menu select 'utf8_general_ci' then press create.
 	- In the main.py change 'wamp_folder' to your path directory where you put combine folder.
 	- Run the python server and start testing by running:
 		`$ python main.py -run wamp`
@@ -136,9 +144,12 @@ Then head to [Tensorflow](https://www.tensorflow.org/install/gpu) website under 
 
 ## Training
 
-If you are interested in the training process and/or data preprocessing, just raise an issue and we'll discuss it there.
+I will upload the training files in the next few days ...!
 
 ## How the system works
 
 I'm publishing a new block on medium very soon, so stay tuned!!.
+
+
+
 

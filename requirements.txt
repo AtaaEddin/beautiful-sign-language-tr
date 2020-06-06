@@ -12,8 +12,8 @@ opencv-python
 opencv_python
 werkzeug
 filetype
-keras
-tensorflow-gpu == 1.11.0
+keras == 2.2.4
+
 
 
 

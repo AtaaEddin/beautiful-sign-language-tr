@@ -6,10 +6,10 @@ import os
 
 #put here the links to the models to be downloaded
 SYSTEMS = {
-	'turkish_10_word' : {'weights' : {'rgb':'https://storage.googleapis.com/createabucket/20181129-0800-chalearn035-rgb-i3d-entire-best_acc_98.h5',
-										'oflow':"https://storage.googleapis.com/createabucket/20181129-1002-chalearn035-oflow-i3d-entire-best.h5",
+	'turkish_10_word' : {'weights' : {'rgb':'https://storage.googleapis.com/beautiful-sign-language-tr-checkpoints/20181129-0800-chalearn035-rgb-i3d-entire-best_acc_98.h5',
+										'oflow':"https://storage.googleapis.com/beautiful-sign-language-tr-checkpoints/20181129-1002-chalearn035-oflow-i3d-entire-best.h5",
 										'lstm':None},
-										'classes' : 'https://storage.googleapis.com/createabucket/turkish_classes.csv'},
+										'classes' : 'https://storage.googleapis.com/beautiful-sign-language-tr-checkpoints/turkish_classes.csv'},
 
 	'turkish_20_word' : {'weights' : {'rgb':None,
 										'oflow':None,
