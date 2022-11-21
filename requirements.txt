@@ -4,7 +4,7 @@ numpy
 pandas 
 requests 
 scikit_learn 
-tensorflow == 1.11.0
+tensorflow == 2.9.3
 win_unicode_console == 0.5
 tqdm
 flask
