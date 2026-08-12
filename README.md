@@ -1,3 +1,5 @@
+
+
 # beautiful sign language (Turkish version) 
 
 I like to consider this repository as a start point, hoping in future to continue further in building full sign language system leveraging deep learning techniques to be able to help hear-impaired people, at this moment our system contains Deep learning models trained on some Turkish sign language [words](https://www.youtube.com/playlist?list=PLxVilKcX9J7Siru_n8Dy1NajiH0CR8EwP).
@@ -75,8 +77,8 @@ clone the repo (or download it as .zip file) and install the requirements.
 **Note:** If you are on windows run the below commands as adminstrator, on linux run it with super user (ex: ubuntu -> sudo)
 
 ```bash
-git clone https://github.com/AtaaEddin/alpha
-cd alpha
+git clone https://github.com/AtaaEddin/beautiful-sign-language-tr.git
+cd beautiful-sign-language-tr
 pip install -r requirements.txt 
 ```
 ## Quick start
@@ -149,7 +151,3 @@ I will upload the training files in the next few days ...!
 ## How the system works
 
 I'm publishing a new block on medium very soon, so stay tuned!!.
-
-
-
-
